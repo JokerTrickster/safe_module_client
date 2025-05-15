@@ -40,13 +40,24 @@ const FloorPlan: React.FC<FloorPlanProps> = ({
 
   // 센서 상태 변경 처리
   const handleStatusChange = (sensorId: string, status: 'normal' | 'warning' | 'danger') => {
+    // 부모 컴포넌트에 상태 변경 알림
     onStatusChange(sensorId, status);
+    
     // 모달 내 선택된 센서의 상태도 업데이트
     if (selectedSensor && selectedSensor.id === sensorId) {
       setSelectedSensor({
         ...selectedSensor,
         status
       });
+    }
+    
+    // 정상 상태로 변경되고 모달을 자동으로 닫으려면 아래 코드 추가 (선택 사항)
+    if (status === 'normal') {
+      // 약간의 지연 후에 모달 닫기 (상태 변경 확인 가능하도록)
+      setTimeout(() => {
+        setIsModalOpen(false);
+        setSelectedSensor(null);
+      }, 1000);
     }
   };
 

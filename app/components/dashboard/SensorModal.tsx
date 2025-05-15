@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { X, AlertCircle, Lightbulb, Bell, AlertTriangle } from 'lucide-react';
 import { Sensor as SensorType } from '../../types';
 
@@ -18,10 +18,28 @@ const SensorModal: React.FC<SensorModalProps> = ({
   const [lightOn, setLightOn] = useState(false);
   const [alarmOn, setAlarmOn] = useState(false);
 
+  // 센서 상태가 변경될 때 자동으로 알람 상태 업데이트
+  useEffect(() => {
+    // 센서가 '위험' 상태일 때 자동으로 알람 켜기
+    if (sensor.status === 'danger') {
+      setAlarmOn(true);
+    }
+  }, [sensor.status]);
+
   if (!isOpen) return null;
 
   const handleStatusChange = (status: 'normal' | 'warning' | 'danger') => {
     onStatusChange(sensor.id, status);
+    
+    // '정상' 상태로 변경되면 알람을 자동으로 끄기
+    if (status === 'normal') {
+      setAlarmOn(false);
+    }
+    
+    // '위험' 상태로 변경되면 알람을 자동으로 켜기
+    if (status === 'danger') {
+      setAlarmOn(true);
+    }
   };
 
   // 센서 타입에 따른 아이콘 및 색상
@@ -139,6 +157,11 @@ const SensorModal: React.FC<SensorModalProps> = ({
               <div className="flex items-center">
                 <Bell size={20} className={alarmOn ? "text-red-500" : "text-gray-400"} />
                 <span className="ml-2">비상벨</span>
+                {sensor.status === 'danger' && alarmOn && (
+                  <span className="ml-2 text-xs text-red-500 animate-pulse">
+                    (활성화됨)
+                  </span>
+                )}
               </div>
               <label className="relative inline-flex items-center cursor-pointer">
                 <input 
@@ -156,20 +179,20 @@ const SensorModal: React.FC<SensorModalProps> = ({
             <h4 className="mb-2 text-sm font-medium text-gray-700">센서 상태 변경</h4>
             <div className="flex space-x-2">
               <button 
-                className="flex-1 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 transition-colors flex items-center justify-center"
+                className={`flex-1 py-2 ${sensor.status === 'normal' ? 'bg-green-600' : 'bg-green-500 hover:bg-green-600'} text-white rounded-md transition-colors flex items-center justify-center`}
                 onClick={() => handleStatusChange('normal')}
               >
                 <span>정상</span>
               </button>
               <button 
-                className="flex-1 py-2 bg-yellow-500 text-white rounded-md hover:bg-yellow-600 transition-colors flex items-center justify-center"
+                className={`flex-1 py-2 ${sensor.status === 'warning' ? 'bg-yellow-600' : 'bg-yellow-500 hover:bg-yellow-600'} text-white rounded-md transition-colors flex items-center justify-center`}
                 onClick={() => handleStatusChange('warning')}
               >
                 <AlertCircle size={16} className="mr-1" />
                 <span>경고</span>
               </button>
               <button 
-                className="flex-1 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition-colors flex items-center justify-center"
+                className={`flex-1 py-2 ${sensor.status === 'danger' ? 'bg-red-600' : 'bg-red-500 hover:bg-red-600'} text-white rounded-md transition-colors flex items-center justify-center`}
                 onClick={() => handleStatusChange('danger')}
               >
                 <AlertTriangle size={16} className="mr-1" />
