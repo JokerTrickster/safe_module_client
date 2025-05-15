@@ -10,8 +10,8 @@
         "label": "Entrance Temp",
         "type": "temperature",
         "position": {
-          "x": 20.15,
-          "y": 30.40
+          "x": 150.15,
+          "y": 90.40
         }
       },
       {
@@ -19,8 +19,8 @@
         "label": "Machine A Humidity",
         "type": "humidity",
         "position": {
-          "x": 50.65,
-          "y": 50.30
+          "x": 850.65,
+          "y": 250.30
         }
       },
       {
@@ -28,8 +28,8 @@
         "label": "Storage Area CO₂",
         "type": "co2",
         "position": {
-          "x": 80.80,
-          "y": 70.75
+          "x": 150.80,
+          "y": 510.75
         }
       }
     ]
