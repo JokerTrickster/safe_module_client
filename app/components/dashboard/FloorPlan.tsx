@@ -2,6 +2,7 @@ import React, { useRef, useEffect, useState } from 'react';
 import Image from 'next/image';
 import { Sensor as SensorType } from '../../types';
 import Sensor from './Sensor';
+import SensorModal from './SensorModal';
 import LoadingSpinner from '../ui/LoadingSpinner';
 import styles from '../../styles/components/dashboard.module.css';
 
@@ -9,12 +10,45 @@ interface FloorPlanProps {
   sensors: SensorType[];
   isLoading: boolean;
   onSensorClick: (sensor: SensorType) => void;
+  onStatusChange?: (sensorId: string, status: 'normal' | 'warning' | 'danger') => void;
 }
 
-const FloorPlan: React.FC<FloorPlanProps> = ({ sensors, isLoading, onSensorClick }) => {
+const FloorPlan: React.FC<FloorPlanProps> = ({ 
+  sensors, 
+  isLoading, 
+  onSensorClick,
+  onStatusChange = () => {} // 기본 빈 함수 제공
+}) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
   const [imageLoaded, setImageLoaded] = useState(false);
+  const [selectedSensor, setSelectedSensor] = useState<SensorType | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  // 센서 클릭 처리
+  const handleSensorClick = (sensor: SensorType) => {
+    setSelectedSensor(sensor);
+    setIsModalOpen(true);
+    onSensorClick(sensor); // 상위 컴포넌트에 알림
+  };
+
+  // 모달 닫기
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedSensor(null);
+  };
+
+  // 센서 상태 변경 처리
+  const handleStatusChange = (sensorId: string, status: 'normal' | 'warning' | 'danger') => {
+    onStatusChange(sensorId, status);
+    // 모달 내 선택된 센서의 상태도 업데이트
+    if (selectedSensor && selectedSensor.id === sensorId) {
+      setSelectedSensor({
+        ...selectedSensor,
+        status
+      });
+    }
+  };
 
   // 이미지가 로드되고 컨테이너 크기가 변경될 때 크기를 업데이트
   useEffect(() => {
@@ -78,7 +112,7 @@ const FloorPlan: React.FC<FloorPlanProps> = ({ sensors, isLoading, onSensorClick
                     ...sensor,
                     position: adjustedSensorPosition(sensor)
                   }}
-                  onClick={onSensorClick}
+                  onClick={handleSensorClick}
                 />
               ))
             ) : sensors.length === 0 ? (
@@ -88,6 +122,16 @@ const FloorPlan: React.FC<FloorPlanProps> = ({ sensors, isLoading, onSensorClick
             ) : null}
           </div>
         </div>
+      )}
+
+      {/* 센서 모달 */}
+      {selectedSensor && (
+        <SensorModal 
+          sensor={selectedSensor} 
+          isOpen={isModalOpen}
+          onClose={handleCloseModal}
+          onStatusChange={handleStatusChange}
+        />
       )}
     </div>
   );
