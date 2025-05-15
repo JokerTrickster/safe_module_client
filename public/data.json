@@ -1,0 +1,37 @@
+{
+    "image": {
+      "src": "public/3d.png",
+      "width": 1920,
+      "height": 1080
+    },
+    "sensors": [
+      {
+        "id": "sensor-1",
+        "label": "Entrance Temp",
+        "type": "temperature",
+        "position": {
+          "x": 20.15,
+          "y": 30.40
+        }
+      },
+      {
+        "id": "sensor-2",
+        "label": "Machine A Humidity",
+        "type": "humidity",
+        "position": {
+          "x": 50.65,
+          "y": 50.30
+        }
+      },
+      {
+        "id": "sensor-3",
+        "label": "Storage Area CO₂",
+        "type": "co2",
+        "position": {
+          "x": 80.80,
+          "y": 70.75
+        }
+      }
+    ]
+  }
+  
