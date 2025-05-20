@@ -6,7 +6,7 @@
     },
     "sensors": [
       {
-        "id": "sensor-1",
+        "id": "sensor-33",
         "label": "Entrance Temp",
         "type": "temperature",
         "position": {

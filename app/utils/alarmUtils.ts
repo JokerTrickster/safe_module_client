@@ -13,6 +13,7 @@ export const playAlarm = (isActive: boolean): void => {
       // emergency_bell.mp3 파일 사용
       alarmSound = new Audio('/sounds/emergency_bell.mp3');
       alarmSound.loop = true; // 반복 재생 설정
+      alarmSound.volume = 0.5; // 볼륨 조정
     }
     
     // 이미 재생 중이면 다시 시작하지 않음

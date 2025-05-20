@@ -31,9 +31,9 @@ const FloorPlan: React.FC<FloorPlanProps> = ({
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
 
-  // 기본 이미지 크기 상수
-  const BASE_IMAGE_WIDTH = 1360;
-  const BASE_IMAGE_HEIGHT = 709;
+  // 기본 이미지 크기 상수 수정
+  const BASE_IMAGE_WIDTH = 1500;
+  const BASE_IMAGE_HEIGHT = 900;
 
   // 초기 중앙 위치 계산
   useEffect(() => {
@@ -177,9 +177,11 @@ const FloorPlan: React.FC<FloorPlanProps> = ({
       style={{ 
         cursor: isDragging ? 'grabbing' : 'grab',
         overflow: 'hidden',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center'
+        width: '1400px',
+        height: '900px',
+        background: '#f8fafc',
+        borderRadius: '0.5rem',
+        boxShadow: '0 2px 8px rgba(0,0,0,0.07)'
       }}
     >
       {isLoading ? (

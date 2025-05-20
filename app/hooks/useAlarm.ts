@@ -42,54 +42,40 @@ export const useAlarm = (sensors: Sensor[]) => {
     };
   }, []);
 
+  // 위험 센서 목록 관리
+  const dangerSensors = sensors.filter(sensor => 
+    sensor.status === "danger" && !acknowledgedSensors.has(sensor.id)
+  );
+
   // 센서 상태 모니터링 및 알람 활성화
   useEffect(() => {
-    // 확인되지 않은 danger 센서가 있는지 확인
-    const hasUnacknowledgedDanger = sensors.some(
-      sensor => sensor.status === "danger" && !acknowledgedSensors.has(sensor.id)
-    );
-    
-    if (hasUnacknowledgedDanger && !alarmActive) {
-      console.log("Unacknowledged danger detected, activating alarm");
+    if (dangerSensors.length > 0 && !alarmActive) {
+      console.log("Danger detected, activating alarm");
       setAlarmActive(true);
       playAlarm(true);
-    } else if (!hasUnacknowledgedDanger && alarmActive) {
-      console.log("No unacknowledged danger detected, deactivating alarm");
+    } else if (dangerSensors.length === 0 && alarmActive) {
+      console.log("No danger detected, deactivating alarm");
       setAlarmActive(false);
       stopAlarm();
     }
-  }, [sensors, alarmActive, acknowledgedSensors]);
+  }, [dangerSensors, alarmActive]);
 
   // 알람 수동 중지 핸들러
-  const handleStopAlarm = () => {
-    console.log("Manual alarm stop requested");
-    // 현재 danger 상태인 센서들을 확인된 것으로 표시
-    const dangerSensorIds = sensors
-      .filter(sensor => sensor.status === "danger")
-      .map(sensor => sensor.id);
-    
+  const handleStopAlarm = (sensorId: string) => {
+    console.log(`Manual alarm stop requested for sensor ${sensorId}`);
     setAcknowledgedSensors(prev => {
       const newSet = new Set(prev);
-      dangerSensorIds.forEach(id => newSet.add(id));
+      newSet.add(sensorId);
       return newSet;
     });
-    
-    setAlarmActive(false);
-    stopAlarm();
-  };
 
-  // 센서 상태가 normal로 변경되면 해당 센서를 확인 목록에서 제거
-  useEffect(() => {
-    setAcknowledgedSensors(prev => {
-      const newSet = new Set(prev);
-      sensors.forEach(sensor => {
-        if (sensor.status !== "danger") {
-          newSet.delete(sensor.id);
-        }
-      });
-      return newSet;
-    });
-  }, [sensors]);
+    // 모든 위험 센서가 확인되었는지 체크
+    const remainingDangerSensors = dangerSensors.filter(sensor => sensor.id !== sensorId);
+    if (remainingDangerSensors.length === 0) {
+      setAlarmActive(false);
+      stopAlarm();
+    }
+  };
 
   // Clean up on unmount
   useEffect(() => {
@@ -102,6 +88,6 @@ export const useAlarm = (sensors: Sensor[]) => {
     alarmActive,
     handleStopAlarm,
     audioInitialized,
-    acknowledgedSensors
+    dangerSensors
   };
 }; 
