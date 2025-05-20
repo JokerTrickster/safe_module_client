@@ -186,7 +186,7 @@ const FloorPlan: React.FC<FloorPlanProps> = ({
         cursor: isDragging ? 'grabbing' : 'grab',
         overflow: 'hidden',
         width: '1400px',
-        height: '900px',
+        height: '800px',
         background: '#f8fafc',
         borderRadius: '0.5rem',
         boxShadow: '0 2px 8px rgba(0,0,0,0.07)'

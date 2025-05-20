@@ -46,13 +46,13 @@ const SensorModal: React.FC<SensorModalProps> = ({
   const getSensorTypeIcon = () => {
     switch (sensor.type) {
       case 'temperature':
-        return <div className="text-red-500">🌡️</div>;
+        return <div className="text-red-600">🌡️</div>;
       case 'humidity':
-        return <div className="text-blue-500">💧</div>;
+        return <div className="text-blue-600">💧</div>;
       case 'pressure':
-        return <div className="text-green-500">🔄</div>;
+        return <div className="text-green-600">🔄</div>;
       default:
-        return <div className="text-gray-500">📊</div>;
+        return <div className="text-gray-600">📊</div>;
     }
   };
 
@@ -93,15 +93,13 @@ const SensorModal: React.FC<SensorModalProps> = ({
   const statusStyle = getStatusStyles();
 
   return (
-    <div 
-      className="fixed inset-0 flex items-center justify-center z-50 pointer-events-none"
-    >
+    <div className="fixed inset-0 flex items-center justify-center z-50 pointer-events-none">
       <div 
         className="bg-white rounded-lg max-w-md w-full p-6 shadow-xl pointer-events-auto"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex justify-between items-center border-b pb-4 mb-4">
-          <h2 className="text-xl font-bold flex items-center">
+        <div className="flex justify-between items-center border-b border-gray-200 pb-4 mb-4">
+          <h2 className="text-xl font-bold text-black flex items-center">
             {getSensorTypeIcon()}
             <span className="ml-2">센서 정보</span>
             <span className={`ml-2 text-sm px-2 py-1 rounded-full ${statusStyle.bgColor} ${statusStyle.textColor}`}>
@@ -110,7 +108,7 @@ const SensorModal: React.FC<SensorModalProps> = ({
           </h2>
           <button 
             onClick={onClose}
-            className="text-gray-500 hover:text-gray-700 transition-colors"
+            className="text-gray-600 hover:text-black transition-colors"
             aria-label="닫기"
           >
             <X size={24} />
@@ -118,9 +116,9 @@ const SensorModal: React.FC<SensorModalProps> = ({
         </div>
 
         <div className={`p-4 rounded-md mb-4 border-l-4 ${statusStyle.borderColor} bg-gray-50`}>
-          <p className="text-lg font-semibold">{sensor.name}</p>
-          <p className="text-gray-600">ID: {sensor.id}</p>
-          <p className="text-gray-600">
+          <p className="text-lg font-semibold text-black">{sensor.name}</p>
+          <p className="text-black">ID: {sensor.id}</p>
+          <p className="text-black">
             타입: {
               sensor.type === 'temperature' ? '온도' : 
               sensor.type === 'humidity' ? '습도' : 
@@ -128,19 +126,19 @@ const SensorModal: React.FC<SensorModalProps> = ({
               sensor.type
             }
           </p>
-          <p className="text-gray-600">
+          <p className="text-black">
             위치: X: {sensor.position.x.toFixed(0)}, Y: {sensor.position.y.toFixed(0)}
           </p>
         </div>
 
-        <div className="border-t pt-4">
-          <h3 className="font-bold mb-3">센서 제어</h3>
+        <div className="border-t border-gray-200 pt-4">
+          <h3 className="font-bold text-black mb-3">센서 제어</h3>
           
           <div className="space-y-4">
             <div className="flex justify-between items-center">
               <div className="flex items-center">
-                <Lightbulb size={20} className={lightOn ? "text-yellow-500" : "text-gray-400"} />
-                <span className="ml-2">조명</span>
+                <Lightbulb size={20} className={lightOn ? "text-yellow-600" : "text-gray-600"} />
+                <span className="ml-2 text-black">조명</span>
               </div>
               <label className="relative inline-flex items-center cursor-pointer">
                 <input 
@@ -155,10 +153,10 @@ const SensorModal: React.FC<SensorModalProps> = ({
 
             <div className="flex justify-between items-center">
               <div className="flex items-center">
-                <Bell size={20} className={alarmOn ? "text-red-500" : "text-gray-400"} />
-                <span className="ml-2">비상벨</span>
+                <Bell size={20} className={alarmOn ? "text-red-600" : "text-gray-600"} />
+                <span className="ml-2 text-black">비상벨</span>
                 {sensor.status === 'danger' && alarmOn && (
-                  <span className="ml-2 text-xs text-red-500 animate-pulse">
+                  <span className="ml-2 text-xs text-red-600 animate-pulse">
                     (활성화됨)
                   </span>
                 )}
@@ -170,13 +168,13 @@ const SensorModal: React.FC<SensorModalProps> = ({
                   checked={alarmOn}
                   onChange={() => setAlarmOn(!alarmOn)}
                 />
-                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-red-600"></div>
               </label>
             </div>
           </div>
 
           <div className="mt-6">
-            <h4 className="mb-2 text-sm font-medium text-gray-700">센서 상태 변경</h4>
+            <h4 className="mb-2 text-sm font-medium text-black">센서 상태 변경</h4>
             <div className="flex space-x-2">
               <button 
                 className={`flex-1 py-2 ${sensor.status === 'normal' ? 'bg-green-600' : 'bg-green-500 hover:bg-green-600'} text-white rounded-md transition-colors flex items-center justify-center`}

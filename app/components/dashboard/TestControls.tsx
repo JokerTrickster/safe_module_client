@@ -41,20 +41,6 @@ const TestControls: React.FC<TestControlsProps> = ({
     <div className={styles.panelSection}>
       <h2 className={styles.panelTitle}>Test Controls</h2>
       <div className={styles.testControls}>
-        {!audioInitialized && (
-          <div className={styles.audioInitContainer}>
-            <p className={styles.audioInitText}>
-              브라우저 정책으로 인해 알람 소리를 활성화하려면 버튼을 클릭하세요
-            </p>
-            <button 
-              className={styles.audioInitButton}
-              onClick={initializeAudio}
-            >
-              알람 소리 활성화
-            </button>
-          </div>
-        )}
-        
         <div className={styles.sensorSelector}>
           <label htmlFor="sensorSelect" className={styles.sensorSelectLabel}>Select Sensor:</label>
           <select 

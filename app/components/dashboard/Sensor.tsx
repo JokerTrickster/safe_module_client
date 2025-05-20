@@ -50,14 +50,14 @@ const Sensor: React.FC<SensorProps> = ({ sensor, onClick }) => {
       
       {/* 호버 시 센서 정보 툴팁 */}
       <div className={styles.sensorTooltip}>
-        <div className="font-bold mb-1">{name}</div>
-        <div>ID: {id}</div>
+        <div className="font-bold mb-1 text-black">{name}</div>
+        <div className="text-black">ID: {id}</div>
         <div className="flex items-center mt-1">
-          <span>상태: </span>
-          <span className={`ml-1 px-1.5 py-0.5 rounded-full text-xs ${
-            status === 'danger' ? 'bg-red-200 text-red-800' : 
-            status === 'warning' ? 'bg-yellow-200 text-yellow-800' : 
-            'bg-green-200 text-green-800'
+          <span className="text-black">상태: </span>
+          <span className={`ml-1 px-1.5 py-0.5 rounded-full text-xs font-medium ${
+            status === 'danger' ? 'bg-red-100 text-red-800' : 
+            status === 'warning' ? 'bg-yellow-100 text-yellow-800' : 
+            'bg-green-100 text-green-800'
           }`}>
             {status === 'danger' ? '위험' : status === 'warning' ? '경고' : '정상'}
           </span>
