@@ -6,7 +6,8 @@
     },
     "sensors": [
       {
-        "id": "sensor-33",
+        "id": "sensor-1",
+        "sensor_id": "30:ED:A0:BA:13:20",
         "label": "Entrance Temp",
         "type": "temperature",
         "position": {
@@ -16,6 +17,7 @@
       },
       {
         "id": "sensor-2",
+        "sensor_id": "30:ED:A0:BA:13:22",
         "label": "Machine A Humidity",
         "type": "humidity",
         "position": {
@@ -25,6 +27,7 @@
       },
       {
         "id": "sensor-3",
+        "sensor_id": "30:ED:A0:BA:13:23",
         "label": "Storage Area CO₂",
         "type": "co2",
         "position": {
