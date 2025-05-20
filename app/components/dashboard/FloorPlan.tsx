@@ -11,19 +11,103 @@ interface FloorPlanProps {
   isLoading: boolean;
   onSensorClick: (sensor: SensorType) => void;
   onStatusChange?: (sensorId: string, status: 'normal' | 'warning' | 'danger') => void;
+  onSensorsUpdate?: (updatedSensors: SensorType[]) => void;
 }
 
 const FloorPlan: React.FC<FloorPlanProps> = ({ 
   sensors, 
   isLoading, 
   onSensorClick,
-  onStatusChange = () => {} // 기본 빈 함수 제공
+  onStatusChange = () => {},
+  onSensorsUpdate = () => {}
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
   const [imageLoaded, setImageLoaded] = useState(false);
   const [selectedSensor, setSelectedSensor] = useState<SensorType | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [scale, setScale] = useState(1); // 확대/축소 비율 상태 추가
+  const [position, setPosition] = useState({ x: 0, y: 0 });
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
+
+  // 기본 이미지 크기 상수
+  const BASE_IMAGE_WIDTH = 1360;
+  const BASE_IMAGE_HEIGHT = 709;
+
+  // 초기 중앙 위치 계산
+  useEffect(() => {
+    if (containerRef.current && dimensions.width > 0) {
+      const centerX = (dimensions.width - BASE_IMAGE_WIDTH) / 2;
+      const centerY = (dimensions.height - BASE_IMAGE_HEIGHT) / 2;
+      setPosition({ x: centerX, y: centerY });
+    }
+  }, [dimensions.width, dimensions.height]);
+
+  // 마우스 휠 이벤트 핸들러 수정
+  const handleWheel = (e: React.WheelEvent) => {
+    e.preventDefault();
+    const delta = e.deltaY > 0 ? -0.1 : 0.1;
+    const newScale = Math.min(Math.max(scale + delta, 1), 1.5);
+    
+    // 마우스 포인터 위치를 기준으로 확대/축소
+    const rect = containerRef.current?.getBoundingClientRect();
+    if (rect) {
+      const mouseX = e.clientX - rect.left;
+      const mouseY = e.clientY - rect.top;
+      
+      // 중앙 기준 확대/축소
+      const centerX = dimensions.width / 2;
+      const centerY = dimensions.height / 2;
+      
+      const scaleChange = newScale - scale;
+      setPosition({
+        x: position.x - ((mouseX - centerX) * scaleChange),
+        y: position.y - ((mouseY - centerY) * scaleChange)
+      });
+    }
+    
+    setScale(newScale);
+  };
+
+  // 마우스 이벤트 핸들러 수정
+  const handleMouseDown = (e: React.MouseEvent) => {
+    if (e.button === 0) { // 왼쪽 클릭만 처리
+      setIsDragging(true);
+      setDragStart({ x: e.clientX - position.x, y: e.clientY - position.y });
+    }
+  };
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (isDragging) {
+      const newX = e.clientX - dragStart.x;
+      const newY = e.clientY - dragStart.y;
+      
+      // 드래그 범위 제한 (선택사항)
+      const maxX = dimensions.width * (scale - 1);
+      const maxY = dimensions.height * (scale - 1);
+      
+      setPosition({
+        x: Math.min(Math.max(newX, -maxX), maxX),
+        y: Math.min(Math.max(newY, -maxY), maxY)
+      });
+    }
+  };
+
+  const handleMouseUp = () => {
+    setIsDragging(false);
+  };
+
+  // 센서 위치 조정 함수 수정
+  const adjustedSensorPosition = (sensor: SensorType) => {
+    const x = (sensor.position.x / BASE_IMAGE_WIDTH) * dimensions.width;
+    const y = (sensor.position.y / BASE_IMAGE_HEIGHT) * dimensions.height;
+    
+    return {
+      x,
+      y
+    };
+  };
 
   // 센서 클릭 처리
   const handleSensorClick = (sensor: SensorType) => {
@@ -81,61 +165,70 @@ const FloorPlan: React.FC<FloorPlanProps> = ({
     };
   }, [containerRef, imageLoaded]);
 
-  // 센서 위치를 이미지 크기에 맞게 조정하는 함수
-  const adjustedSensorPosition = (sensor: SensorType) => {
-    // 기본 이미지 크기 (디자인 시 기준점)
-    const baseImageWidth = 1200;
-    const baseImageHeight = 800;
-
-    // 현재 컨테이너 크기에 맞게 센서 위치 조정
-    const adjustedX = (sensor.position.x / baseImageWidth) * dimensions.width;
-    const adjustedY = (sensor.position.y / baseImageHeight) * dimensions.height;
-
-    return {
-      x: adjustedX,
-      y: adjustedY
-    };
-  };
-
   return (
-    <div className={styles.mapContainer} ref={containerRef}>
+    <div 
+      className={styles.mapContainer} 
+      ref={containerRef}
+      onWheel={handleWheel}
+      onMouseDown={handleMouseDown}
+      onMouseMove={handleMouseMove}
+      onMouseUp={handleMouseUp}
+      onMouseLeave={handleMouseUp}
+      style={{ 
+        cursor: isDragging ? 'grabbing' : 'grab',
+        overflow: 'hidden',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center'
+      }}
+    >
       {isLoading ? (
         <LoadingSpinner />
       ) : (
         <div className={styles.floorPlanContainer}>
-          <div className="relative w-full h-full">
-            <Image 
-              src="/3d.png" 
-              alt="3D Floor Plan"
-              width={1200}
-              height={800}
-              layout="responsive"
-              className={styles.floorPlanImage}
-              onLoad={() => setImageLoaded(true)}
-              priority
-            />
-            
-            {imageLoaded && dimensions.width > 0 && sensors.length > 0 ? (
-              sensors.map((sensor) => (
-                <Sensor 
-                  key={sensor.id}
-                  sensor={{
-                    ...sensor,
-                    position: adjustedSensorPosition(sensor)
-                  }}
-                  onClick={handleSensorClick}
-                />
-              ))
-            ) : sensors.length === 0 ? (
-              <div className={styles.noSensorsMessage}>
-                No sensors found. Check data.json file.
-              </div>
-            ) : null}
+          <div 
+            className="relative w-full h-full"
+            style={{
+              transform: `scale(${scale}) translate(${position.x}px, ${position.y}px)`,
+              transformOrigin: 'center center',
+              transition: isDragging ? 'none' : 'transform 0.1s ease-out'
+            }}
+          >
+            <div className="relative w-full h-full">
+              <Image 
+                src="/3d.png" 
+                alt="3D Floor Plan"
+                width={BASE_IMAGE_WIDTH}
+                height={BASE_IMAGE_HEIGHT}
+                layout="responsive"
+                className={styles.floorPlanImage}
+                onLoad={() => setImageLoaded(true)}
+                priority
+              />
+              
+              {imageLoaded && dimensions.width > 0 && sensors.length > 0 ? (
+                <div className="absolute inset-0">
+                  {sensors.map((sensor) => (
+                    <Sensor 
+                      key={sensor.id}
+                      sensor={{
+                        ...sensor,
+                        position: adjustedSensorPosition(sensor)
+                      }}
+                      onClick={handleSensorClick}
+                    />
+                  ))}
+                </div>
+              ) : sensors.length === 0 ? (
+                <div className={styles.noSensorsMessage}>
+                  No sensors found. Check data.json file.
+                </div>
+              ) : null}
+            </div>
           </div>
         </div>
       )}
 
-      {/* 센서 모달 */}
       {selectedSensor && (
         <SensorModal 
           sensor={selectedSensor} 
