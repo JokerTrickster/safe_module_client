@@ -34,7 +34,7 @@ export const playAlarm = (isActive: boolean): void => {
 };
 
 export const stopAlarm = (): void => {
-  console.log("Stopping emergency bell alarm");
+  console.log("Stopping emergency bell alarm1111111111111111111111111111111111");
   if (alarmSound) {
     alarmSound.pause();
     alarmSound.currentTime = 0;
