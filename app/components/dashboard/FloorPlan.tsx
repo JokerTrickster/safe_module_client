@@ -49,26 +49,34 @@ const FloorPlan: React.FC<FloorPlanProps> = ({
     e.preventDefault();
     const delta = e.deltaY > 0 ? -0.1 : 0.1;
     const newScale = Math.min(Math.max(scale + delta, 1), 1.5);
-    
-    // 마우스 포인터 위치를 기준으로 확대/축소
+  
     const rect = containerRef.current?.getBoundingClientRect();
     if (rect) {
       const mouseX = e.clientX - rect.left;
       const mouseY = e.clientY - rect.top;
-      
-      // 중앙 기준 확대/축소
-      const centerX = dimensions.width / 2;
-      const centerY = dimensions.height / 2;
-      
-      const scaleChange = newScale - scale;
-      setPosition({
-        x: position.x - ((mouseX - centerX) * scaleChange),
-        y: position.y - ((mouseY - centerY) * scaleChange)
-      });
+  
+      if (newScale > scale) {
+        // 확대 (마우스 위치 기준)
+        const centerX = dimensions.width / 2;
+        const centerY = dimensions.height / 2;
+        const scaleChange = newScale - scale;
+        setPosition({
+          x: position.x - ((mouseX - centerX) * scaleChange),
+          y: position.y - ((mouseY - centerY) * scaleChange)
+        });
+      } else if (newScale === 1) {
+        // 최소 스케일일 때만 중앙 정렬
+        const centerX = rect.width / 2;
+        const centerY = rect.height / 2;
+        const newX = centerX - (dimensions.width * newScale) / 2;
+        const newY = centerY - (dimensions.height * newScale) / 2;
+        setPosition({ x: newX, y: newY });
+      } // 축소 중간값일 땐 position 변경 없음
     }
-    
+  
     setScale(newScale);
   };
+  
 
   // 마우스 이벤트 핸들러 수정
   const handleMouseDown = (e: React.MouseEvent) => {
