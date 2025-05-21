@@ -42,15 +42,15 @@ const SensorModal: React.FC<SensorModalProps> = ({
     }
   };
 
-  // 센서 타입에 따른 아이콘 및 색상
-  const getSensorTypeIcon = () => {
-    switch (sensor.type) {
-      case 'temperature':
+  // 센서 ID에 따른 아이콘 및 색상
+  const getSensorTypeIcon = (sensor: SensorType) => {
+    switch (sensor.id) {
+      case "1":
         return <div className="text-red-600">🌡️</div>;
-      case 'humidity':
+      case "2":
         return <div className="text-blue-600">💧</div>;
-      case 'pressure':
-        return <div className="text-green-600">🔄</div>;
+      case "3":
+        return <div className="text-green-600">🌫️</div>;
       default:
         return <div className="text-gray-600">📊</div>;
     }
@@ -100,7 +100,7 @@ const SensorModal: React.FC<SensorModalProps> = ({
       >
         <div className="flex justify-between items-center border-b border-gray-200 pb-4 mb-4">
           <h2 className="text-xl font-bold text-black flex items-center">
-            {getSensorTypeIcon()}
+            {getSensorTypeIcon(sensor)}
             <span className="ml-2">센서 정보</span>
             <span className={`ml-2 text-sm px-2 py-1 rounded-full ${statusStyle.bgColor} ${statusStyle.textColor}`}>
               {statusStyle.text}
@@ -122,7 +122,8 @@ const SensorModal: React.FC<SensorModalProps> = ({
             타입: {
               sensor.type === 'temperature' ? '온도' : 
               sensor.type === 'humidity' ? '습도' : 
-              sensor.type === 'pressure' ? '압력' : 
+              sensor.type === 'co2' ? '이산화탄소' : 
+              sensor.type === 'co' ? '일산화탄소' : 
               sensor.type
             }
           </p>

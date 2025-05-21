@@ -1,5 +1,5 @@
 import React from 'react';
-import { Sensor as SensorType } from '../../types';
+import { Sensor as SensorType, SensorStatus } from '../../types';
 import { AlertTriangle } from 'lucide-react';
 import styles from '../../styles/components/dashboard.module.css';
 
@@ -12,13 +12,14 @@ const Sensor: React.FC<SensorProps> = ({ sensor, onClick }) => {
   const { id, name, status, position } = sensor;
   
   // 센서 상태에 따른 색상 지정
-  const statusColorMap = {
+  const statusColorMap: Record<SensorStatus, string> = {
     normal: 'bg-green-500',
     warning: 'bg-yellow-500',
     danger: 'bg-red-500',
+    warmup: 'bg-blue-500'
   };
   
-  const statusColor = statusColorMap[status] || 'bg-gray-500';
+  const statusColor = statusColorMap[status];
 
   return (
     <div 
@@ -30,7 +31,7 @@ const Sensor: React.FC<SensorProps> = ({ sensor, onClick }) => {
       onClick={() => onClick(sensor)}
       role="button"
       tabIndex={0}
-      aria-label={`${name} 센서 (${id}): ${status === 'danger' ? '위험' : status === 'warning' ? '경고' : '정상'}`}
+      aria-label={`${name} 센서 (${id}): ${status === 'danger' ? '위험' : status === 'warning' ? '경고' : status === 'warmup' ? '준비중' : '정상'}`}
       onKeyDown={(e) => e.key === 'Enter' && onClick(sensor)}
     >
       {/* 센서 아이콘 */}
@@ -57,9 +58,10 @@ const Sensor: React.FC<SensorProps> = ({ sensor, onClick }) => {
           <span className={`ml-1 px-1.5 py-0.5 rounded-full text-xs font-medium ${
             status === 'danger' ? 'bg-red-100 text-red-800' : 
             status === 'warning' ? 'bg-yellow-100 text-yellow-800' : 
+            status === 'warmup' ? 'bg-blue-100 text-blue-800' :
             'bg-green-100 text-green-800'
           }`}>
-            {status === 'danger' ? '위험' : status === 'warning' ? '경고' : '정상'}
+            {status === 'danger' ? '위험' : status === 'warning' ? '경고' : status === 'warmup' ? '준비중' : '정상'}
           </span>
         </div>
       </div>

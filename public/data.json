@@ -8,32 +8,77 @@
       {
         "id": "sensor-1",
         "sensor_id": "30:ED:A0:BA:13:20",
+        "name": "Entrance Temp",
         "label": "Entrance Temp",
         "type": "temperature",
+        "status": "normal",
         "position": {
           "x": 150.15,
           "y": 90.40
-        }
+        },
+        "lightStatus": "off",
+        "sensors": [
+          {
+            "name": "co2",
+            "value": 450,
+            "status": "normal"
+          },
+          {
+            "name": "co",
+            "value": 0,
+            "status": "normal"
+          }
+        ]
       },
       {
         "id": "sensor-2",
         "sensor_id": "30:ED:A0:BA:13:22",
+        "name": "Machine A Humidity",
         "label": "Machine A Humidity",
         "type": "humidity",
+        "status": "normal",
         "position": {
           "x": 850.65,
           "y": 250.30
-        }
+        },
+        "lightStatus": "on",
+        "sensors": [
+          {
+            "name": "co2",
+            "value": 1200,
+            "status": "warning"
+          },
+          {
+            "name": "co",
+            "value": 5,
+            "status": "normal"
+          }
+        ]
       },
       {
         "id": "sensor-3",
         "sensor_id": "30:ED:A0:BA:13:23",
+        "name": "Storage Area CO₂",
         "label": "Storage Area CO₂",
         "type": "co2",
+        "status": "normal",
         "position": {
           "x": 150.80,
           "y": 510.75
-        }
+        },
+        "lightStatus": "off",
+        "sensors": [
+          {
+            "name": "co2",
+            "value": 2500,
+            "status": "danger"
+          },
+          {
+            "name": "co",
+            "value": 15,
+            "status": "warning"
+          }
+        ]
       }
     ]
   }
