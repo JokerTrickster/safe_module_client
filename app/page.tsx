@@ -20,7 +20,10 @@ export default function Home() {
   } = useSensors();
 
   return (
-    <DashboardLayout sensors={sensors}>
+    <DashboardLayout
+      sensors={sensors}
+      onStatusChange={updateSensorStatus}
+    >
       <div className={styles.sidePanel}>
         <SensorStats sensors={sensors} />
         <SensorDetails selectedSensor={selectedSensor} />

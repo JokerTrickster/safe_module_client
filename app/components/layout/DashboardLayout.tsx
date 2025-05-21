@@ -7,9 +7,10 @@ import { Sensor } from '../../types';
 interface DashboardLayoutProps {
   children: React.ReactNode;
   sensors: Sensor[];
+  onStatusChange: (sensorId: string, status: 'normal' | 'warning' | 'danger') => void;
 }
 
-const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children, sensors }) => {
+const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children, sensors, onStatusChange }) => {
   const { alarmActive, handleStopAlarm, dangerSensors } = useAlarm(sensors);
 
   return (
@@ -18,6 +19,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children, sensors }) 
         alarmActive={alarmActive}
         onStopAlarm={handleStopAlarm}
         dangerSensors={dangerSensors}
+        onStatusChange={onStatusChange}
       />
 
       {/* 메인 컨텐츠 */}

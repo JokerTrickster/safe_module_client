@@ -7,21 +7,21 @@ interface SensorModalProps {
   isOpen: boolean;
   onClose: () => void;
   onStatusChange: (sensorId: string, status: 'normal' | 'warning' | 'danger') => void;
+  onAlarmToggle?: (sensorId: string, isActive: boolean) => void;
 }
 
 const SensorModal: React.FC<SensorModalProps> = ({ 
   sensor, 
   isOpen, 
   onClose,
-  onStatusChange 
+  onStatusChange,
+  onAlarmToggle
 }) => {
   const [lightOn, setLightOn] = useState(sensor.lightStatus === 'on');
-  const [alarmOn, setAlarmOn] = useState(false);
+  const [alarmOn, setAlarmOn] = useState(sensor.status === 'danger');
 
   useEffect(() => {
-    if (sensor.status === 'danger') {
-      setAlarmOn(true);
-    }
+    setAlarmOn(sensor.status === 'danger');
   }, [sensor.status]);
 
   if (!isOpen) return null;
@@ -30,9 +30,11 @@ const SensorModal: React.FC<SensorModalProps> = ({
     onStatusChange(sensor.id, status);
     if (status === 'normal') {
       setAlarmOn(false);
+      if (onAlarmToggle) onAlarmToggle(sensor.id, false);
     }
     if (status === 'danger') {
       setAlarmOn(true);
+      if (onAlarmToggle) onAlarmToggle(sensor.id, true);
     }
   };
 
@@ -70,6 +72,13 @@ const SensorModal: React.FC<SensorModalProps> = ({
   };
 
   const statusStyle = getStatusStyles();
+
+  // 비상벨 토글 시 알람배너만 사라지게
+  const handleAlarmToggle = () => {
+    const newAlarmState = !alarmOn;
+    setAlarmOn(newAlarmState);
+    if (onAlarmToggle) onAlarmToggle(sensor.id, newAlarmState);
+  };
 
   return (
     <div className="fixed inset-0 flex items-center justify-center z-50 pointer-events-none">
@@ -164,7 +173,7 @@ const SensorModal: React.FC<SensorModalProps> = ({
                 type="checkbox" 
                 className="sr-only peer"
                 checked={alarmOn}
-                onChange={() => setAlarmOn(!alarmOn)}
+                onChange={handleAlarmToggle}
               />
               <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-red-600"></div>
             </label>
@@ -196,6 +205,16 @@ const SensorModal: React.FC<SensorModalProps> = ({
               </button>
             </div>
           </div>
+        </div>
+
+        {/* 모달 하단 확인 버튼 */}
+        <div className="border-t border-gray-200 pt-4">
+          <button
+            onClick={onClose}
+            className="w-full py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors flex items-center justify-center"
+          >
+            확인
+          </button>
         </div>
       </div>
     </div>
