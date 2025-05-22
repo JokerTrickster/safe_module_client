@@ -1,4 +1,5 @@
 import { Sensor, SensorType, SensorStatus } from '../types';
+import { ApiSensor } from '../api/sensors';
 
 export const mockSensors: Sensor[] = [
   { 
@@ -75,4 +76,21 @@ export const getSensorsByType = (sensors: Sensor[], type: SensorType): Sensor[] 
 
 export const getSensorsByStatus = (sensors: Sensor[], status: SensorStatus): Sensor[] => {
   return sensors.filter(sensor => sensor.status === status);
-}; 
+};
+
+export const mapApiSensorToAppSensor = (apiSensor: ApiSensor): Sensor => ({
+  id: apiSensor.sensorID,
+  sensor_id: apiSensor.sensorID,
+  name: apiSensor.sensors[0]?.name || apiSensor.sensorID,
+  label: apiSensor.sensors[0]?.name || apiSensor.sensorID,
+  type: (apiSensor.sensors[0]?.name as SensorType) || 'temperature',
+  status: (apiSensor.sensors[0]?.status as SensorStatus) || 'normal',
+  position: apiSensor.position,
+  lightStatus: apiSensor.lightStatus === 'on' ? 'on' : 'off',
+  sensors: apiSensor.sensors.map(s => ({
+    name: s.name,
+    value: s.value,
+    status: s.status as SensorStatus,
+    unit: s.unit,
+  })),
+}); 

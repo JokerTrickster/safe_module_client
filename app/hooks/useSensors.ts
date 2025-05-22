@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
+import { fetchSensorList, ApiSensor } from '../api/sensors';
+import { mapApiSensorToAppSensor } from '../utils/sensorUtils';
 import { Sensor, SensorStatus } from '../types';
-import { mockSensors } from '../utils/sensorUtils';
 
 export const useSensors = () => {
   const [sensors, setSensors] = useState<Sensor[]>([]);
@@ -9,52 +10,29 @@ export const useSensors = () => {
   const [selectedSensor, setSelectedSensor] = useState<Sensor | null>(null);
 
   useEffect(() => {
-    const fetchSensors = async () => {
+    const load = async () => {
+      setIsLoading(true);
       try {
-        console.log("Fetching sensor data...");
-        const response = await fetch('/data.json');
-        
-        if (!response.ok) {
-          throw new Error(`Failed to fetch: ${response.status} ${response.statusText}`);
-        }
-        
-        const data = await response.json();
-        console.log("Data loaded:", data);
-        
-        if (data.sensors && Array.isArray(data.sensors)) {
-          // Add status field if it doesn't exist
-          const sensorsWithStatus = data.sensors.map((sensor: any) => ({
-            ...sensor,
-            status: sensor.status || "normal"
-          }));
-          setSensors(sensorsWithStatus);
-        } else {
-          console.warn("No sensors found in data, using mock data");
-          setSensors(mockSensors);
-        }
-      } catch (error) {
-        console.error("Error loading sensor data:", error);
-        setError("Failed to load sensor data. Using mock data instead.");
-        setSensors(mockSensors);
-      } finally {
-        setIsLoading(false);
+        const apiSensors = await fetchSensorList();
+        setSensors(apiSensors.map(mapApiSensorToAppSensor));
+        setError(null);
+      } catch (e) {
+        setError('센서 정보를 불러오지 못했습니다.');
       }
+      setIsLoading(false);
     };
-
-    fetchSensors();
+    load();
   }, []);
 
   const updateSensorStatus = (sensorId: string, status: SensorStatus) => {
-    setSensors(prevSensors => 
-      prevSensors.map(sensor => 
+    setSensors(prev =>
+      prev.map(sensor =>
         sensor.id === sensorId ? { ...sensor, status } : sensor
       )
     );
   };
 
-  const selectSensor = (sensor: Sensor) => {
-    setSelectedSensor(sensor);
-  };
+  const selectSensor = (sensor: Sensor) => setSelectedSensor(sensor);
 
   return {
     sensors,
@@ -62,6 +40,6 @@ export const useSensors = () => {
     error,
     selectedSensor,
     updateSensorStatus,
-    selectSensor
+    selectSensor,
   };
 }; 
