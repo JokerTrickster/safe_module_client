@@ -11,7 +11,7 @@ export interface Sensor {
   sensor_id: string;
   name: string;
   label: string;
-  type: 'temperature' | 'humidity' | 'co2' | 'co';
+  type:  'co2' | 'co';
   status: SensorStatus;
   position: {
     x: number;
@@ -22,4 +22,4 @@ export interface Sensor {
   sensors: SensorData[];
 }
 
-export type SensorType = 'temperature' | 'humidity' | 'co2' | 'co'; 
+export type SensorType = 'co2' | 'co'; 

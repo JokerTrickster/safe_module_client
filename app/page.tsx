@@ -4,7 +4,6 @@ import React from 'react';
 import DashboardLayout from './components/layout/DashboardLayout';
 import SensorStats from './components/dashboard/SensorStats';
 import SensorDetails from './components/dashboard/SensorDetails';
-import TestControls from './components/dashboard/TestControls';
 import FloorPlan from './components/dashboard/FloorPlan';
 import { useSensors } from './hooks/useSensors';
 import styles from './styles/components/layout.module.css';
@@ -28,12 +27,7 @@ export default function Home() {
       <div className={styles.sidePanel}>
         <SensorStats sensors={sensors} />
         <SensorDetails selectedSensor={selectedSensor} thresholds={thresholds} />
-        <TestControls 
-          sensors={sensors}
-          selectedSensor={selectedSensor}
-          onSelectSensor={selectSensor}
-          onUpdateStatus={updateSensorStatus}
-        />
+  
         
         {error && (
           <div className={styles.errorMessage}>
