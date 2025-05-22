@@ -17,7 +17,7 @@ export interface Sensor {
     x: number;
     y: number;
   };
-  lightStatus: 'on' | 'shutdown';
+  lightStatus: 'normal' | 'shutdown';
   sensors: SensorData[];
 }
 
