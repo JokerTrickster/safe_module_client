@@ -7,11 +7,12 @@ import { Sensor } from '../../types';
 interface DashboardLayoutProps {
   children: React.ReactNode;
   sensors: Sensor[];
+  thresholds: { name: string; threshold: number }[];
   onStatusChange: (sensorId: string, status: 'normal' | 'warning' | 'danger') => void;
 }
 
-const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children, sensors, onStatusChange }) => {
-  const { alarmActive, handleStopAlarm, dangerSensors } = useAlarm(sensors);
+const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children, sensors, thresholds, onStatusChange }) => {
+  const { alarmActive, handleStopAlarm, dangerSensors } = useAlarm(sensors, thresholds);
 
   return (
     <div className="min-h-screen bg-gray-50">

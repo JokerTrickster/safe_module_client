@@ -6,6 +6,11 @@ import { useAlarm } from '../../hooks/useAlarm';
 import { mockSensors } from '../../utils/sensorUtils';
 import { Sensor } from '../../types';
 
+const thresholds = [
+  { name: 'co2', threshold: 3000 },
+  { name: 'co', threshold: 500 }
+];
+
 const Dashboard: React.FC = () => {
   const [sensors, setSensors] = useState<Sensor[]>(mockSensors);
   const [selectedSensor, setSelectedSensor] = useState<Sensor | null>(null);
@@ -33,7 +38,7 @@ const Dashboard: React.FC = () => {
       <div className="flex flex-row h-[900px] max-w-[1400px] mx-auto py-8">
         {/* 사이드 패널: 왼쪽에 고정 */}
         <aside className="w-80 flex-shrink-0 h-full">
-          <SensorStats sensors={sensors} />
+          <SensorStats sensors={sensors} thresholds={thresholds} />
         </aside>
         {/* 메인 컨텐츠: 이미지 중앙 정렬 */}
         <main className="flex-1 flex items-center justify-center h-full">

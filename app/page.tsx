@@ -22,10 +22,11 @@ export default function Home() {
   return (
     <DashboardLayout
       sensors={sensors}
+      thresholds={thresholds}
       onStatusChange={updateSensorStatus}
     >
       <div className={styles.sidePanel}>
-        <SensorStats sensors={sensors} />
+        <SensorStats sensors={sensors} thresholds={thresholds} />
         <SensorDetails selectedSensor={selectedSensor} thresholds={thresholds} />
   
         

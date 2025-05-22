@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Sensor } from '../types';
 import { playAlarm, stopAlarm } from '../utils/alarmUtils';
 
-export const useAlarm = (sensors: Sensor[]) => {
+export const useAlarm = (sensors: Sensor[], thresholds: { name: string; threshold: number }[] = []) => {
   const [alarmActive, setAlarmActive] = useState(false);
   const [audioInitialized, setAudioInitialized] = useState(false);
   const [acknowledgedSensors, setAcknowledgedSensors] = useState<Set<string>>(new Set());
@@ -42,13 +42,26 @@ export const useAlarm = (sensors: Sensor[]) => {
     };
   }, []);
 
-  // 위험 센서 목록 관리
-  const dangerSensors = sensors.filter(sensor => 
-    sensor.status === "danger" && !acknowledgedSensors.has(sensor.id)
-  );
+  // 임계치 값 추출 함수
+  const getThreshold = (name: string, fallback: number) => {
+    const found = thresholds.find(t => t.name === name);
+    return found ? found.threshold : fallback;
+  };
+
+  // 위험 센서 목록 관리 (화재 감지, CO2/CO 임계치 포함)
+  const dangerSensors = sensors.filter(sensor => {
+    if (acknowledgedSensors.has(sensor.id)) return false;
+    if (sensor.status === 'danger') return true;
+    if (sensor.fireDetector === 'detection') return true;
+    const co2Limit = getThreshold('co2', 3000);
+    const coLimit = getThreshold('co', 500);
+    if (sensor.sensors.some(s => (s.name === 'co2' && s.value >= co2Limit) || (s.name === 'co' && s.value >= coLimit))) return true;
+    return false;
+  });
 
   // 센서 상태 모니터링 및 알람 활성화
   useEffect(() => {
+    if (!audioInitialized) return;
     if (dangerSensors.length > 0 && !alarmActive) {
       console.log("Danger detected, activating alarm");
       setAlarmActive(true);
@@ -58,7 +71,7 @@ export const useAlarm = (sensors: Sensor[]) => {
       setAlarmActive(false);
       stopAlarm();
     }
-  }, [dangerSensors, alarmActive]);
+  }, [dangerSensors, alarmActive, audioInitialized]);
 
   // 알람 수동 중지 핸들러
   const handleStopAlarm = (sensorId: string) => {

@@ -4,9 +4,15 @@ import { Lightbulb, Flame, AlertTriangle } from 'lucide-react';
 
 interface SensorStatsProps {
   sensors: Sensor[];
+  thresholds: { name: string; threshold: number }[];
 }
 
-const SensorStats: React.FC<SensorStatsProps> = ({ sensors }) => {
+const getThreshold = (thresholds: { name: string; threshold: number }[], name: string, fallback: number) => {
+  const found = thresholds.find(t => t.name === name);
+  return found ? found.threshold : fallback;
+};
+
+const SensorStats: React.FC<SensorStatsProps> = ({ sensors, thresholds }) => {
   return (
     <div className="bg-white rounded-lg shadow-md p-4 mt-4">
       <h2 className="text-lg font-bold text-black mb-2">센서 전체 현황</h2>
@@ -25,6 +31,10 @@ const SensorStats: React.FC<SensorStatsProps> = ({ sensors }) => {
             {sensors.map(sensor => {
               const co2 = sensor.sensors.find(s => s.name === 'co2');
               const co = sensor.sensors.find(s => s.name === 'co');
+              const co2Limit = getThreshold(thresholds, 'co2', 3000);
+              const co2Warn = co2Limit * 0.8;
+              const coLimit = getThreshold(thresholds, 'co', 500);
+              const coWarn = coLimit * 0.8;
               return (
                 <tr
                   key={sensor.id}
@@ -64,15 +74,15 @@ const SensorStats: React.FC<SensorStatsProps> = ({ sensors }) => {
                   </td>
                   <td className="px-4 py-2">
                     <div className="flex items-center gap-1">
-                      {co2 && co2.value >= 3000 && (
+                      {co2 && co2.value >= co2Limit && (
                         <AlertTriangle size={16} className="text-red-500" />
                       )}
                       <span
                         className={
                           co2
-                            ? co2.value >= 3000
+                            ? co2.value >= co2Limit
                               ? 'text-red-600 font-bold'
-                              : co2.value >= 2400
+                              : co2.value >= co2Warn
                               ? 'text-yellow-600 font-semibold'
                               : 'text-black'
                             : 'text-gray-400'
@@ -84,15 +94,15 @@ const SensorStats: React.FC<SensorStatsProps> = ({ sensors }) => {
                   </td>
                   <td className="px-4 py-2">
                     <div className="flex items-center gap-1">
-                      {co && co.value >= 500 && (
+                      {co && co.value >= coLimit && (
                         <AlertTriangle size={16} className="text-red-500" />
                       )}
                       <span
                         className={
                           co
-                            ? co.value >= 500
+                            ? co.value >= coLimit
                               ? 'text-red-600 font-bold'
-                              : co.value >= 400
+                              : co.value >= coWarn
                               ? 'text-yellow-600 font-semibold'
                               : 'text-black'
                             : 'text-gray-400'

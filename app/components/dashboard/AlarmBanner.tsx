@@ -13,6 +13,7 @@ const AlarmBanner: React.FC<AlarmBannerProps> = ({ onStopAlarm, dangerSensors, o
   const [selectedSensor, setSelectedSensor] = useState<Sensor | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [activeAlarms, setActiveAlarms] = useState<Set<string>>(new Set());
+  const [audioInitialized, setAudioInitialized] = useState(false);
 
   // 위험 상태인 센서가 추가되면 자동으로 알람 활성화
   useEffect(() => {
@@ -31,6 +32,16 @@ const AlarmBanner: React.FC<AlarmBannerProps> = ({ onStopAlarm, dangerSensors, o
     );
     setActiveAlarms(dangerIds);
   }, [dangerSensors]);
+
+  useEffect(() => {
+    const initAudio = () => {
+      // ... audio.play() ...
+    };
+    document.addEventListener('click', initAudio, { once: true });
+    return () => {
+      document.removeEventListener('click', initAudio);
+    };
+  }, []);
 
   // 확인 버튼 클릭 시 모달 오픈
   const handleClick = (sensorId: string) => {
@@ -83,6 +94,9 @@ const AlarmBanner: React.FC<AlarmBannerProps> = ({ onStopAlarm, dangerSensors, o
     )
   );
 
+  // Utility to get last two characters of sensor_id
+  const getSensorShortName = (sensorId: string) => sensorId.slice(-2);
+
   if (visibleSensors.length === 0) return null;
 
   return (
@@ -112,8 +126,10 @@ const AlarmBanner: React.FC<AlarmBannerProps> = ({ onStopAlarm, dangerSensors, o
                     </div>
                   </div>
                   <div className="flex-1">
-                    <h3 className="text-sm font-medium text-gray-900">
-                      {sensor.name}
+                    <h3 className="text-sm font-medium text-gray-900" aria-label={`센서 ${getSensorShortName(sensor.id)}`}
+                      tabIndex={0}
+                    >
+                      {getSensorShortName(sensor.id)}
                     </h3>
                     <div className="mt-1">
                       <p className="text-sm text-gray-600">
