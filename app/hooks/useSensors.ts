@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { fetchSensorList, ApiSensor } from '../api/sensors';
+import { fetchSensorList, fetchThresholdList, Threshold } from '../api/sensors';
 import { mapApiSensorToAppSensor } from '../utils/sensorUtils';
 import { Sensor, SensorStatus } from '../types';
 
@@ -8,6 +8,7 @@ export const useSensors = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedSensorId, setSelectedSensorId] = useState<string | null>(null);
+  const [thresholds, setThresholds] = useState<Threshold[]>([]);
 
   useEffect(() => {
     let isMounted = true;
@@ -38,6 +39,12 @@ export const useSensors = () => {
     };
   }, []);
 
+  useEffect(() => {
+    fetchThresholdList()
+      .then(setThresholds)
+      .catch(() => setThresholds([]));
+  }, []);
+
   const updateSensorStatus = (sensorId: string, status: SensorStatus) => {
     setSensors(prev =>
       prev.map(sensor =>
@@ -58,5 +65,6 @@ export const useSensors = () => {
     selectedSensor: currentSensor,
     updateSensorStatus,
     selectSensor,
+    thresholds,
   };
 }; 

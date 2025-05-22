@@ -5,9 +5,18 @@ import styles from '../../styles/components/dashboard.module.css';
 
 interface SensorDetailsProps {
   selectedSensor: (Sensor & { fireDetector?: string }) | null;
+  thresholds: { name: string; threshold: number }[];
 }
 
-const SensorDetails: React.FC<SensorDetailsProps> = ({ selectedSensor }) => {
+const getValueStatus = (name: string, value: number, thresholds: { name: string; threshold: number }[]) => {
+  const threshold = thresholds.find(t => t.name === name);
+  if (!threshold) return { label: '정상', color: 'text-green-600' };
+  if (value >= threshold.threshold) return { label: '위험', color: 'text-red-600' };
+  if (value >= threshold.threshold * 0.8) return { label: '경고', color: 'text-yellow-600' };
+  return { label: '정상', color: 'text-green-600' };
+};
+
+const SensorDetails: React.FC<SensorDetailsProps> = ({ selectedSensor, thresholds }) => {
   // 센서 상태 한글 변환
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -79,10 +88,10 @@ const SensorDetails: React.FC<SensorDetailsProps> = ({ selectedSensor }) => {
               <div className="flex items-center">
                 <Lightbulb 
                   size={20} 
-                  className={selectedSensor.lightStatus === 'shutdown' ? "text-gray-400" : "text-yellow-500"} 
+                  className={selectedSensor.lightStatus === 'normal' ? "text-yellow-500" : "text-gray-400"} 
                 />
                 <span className="ml-2 text-black">
-                  {getLightStatusText(selectedSensor.lightStatus)}
+                  {selectedSensor.lightStatus === 'normal' ? '정상' : '조명 꺼짐'}
                 </span>
               </div>
             </div>
@@ -108,21 +117,24 @@ const SensorDetails: React.FC<SensorDetailsProps> = ({ selectedSensor }) => {
           <div>
             <p className="text-sm text-gray-600 mb-2">센서 데이터</p>
             <div className="space-y-3">
-              {selectedSensor.sensors.map((sensor, index) => (
-                <div key={index} className="bg-gray-50 p-3 rounded-md">
-                  <div className="flex justify-between items-center">
-                    <span className="text-black font-medium">
-                      {sensor.name === 'co2' ? '이산화탄소' : '일산화탄소'}
-                    </span>
-                    <span className={`font-medium ${getStatusColor(sensor.status)}`}>
-                      {getStatusText(sensor.status)}
-                    </span>
+              {selectedSensor.sensors.map((sensor, index) => {
+                const valueStatus = getValueStatus(sensor.name, sensor.value, thresholds);
+                return (
+                  <div key={index} className="bg-gray-50 p-3 rounded-md">
+                    <div className="flex justify-between items-center">
+                      <span className="text-black font-medium">
+                        {sensor.name === 'co2' ? '이산화탄소' : '일산화탄소'}
+                      </span>
+                      <span className={`font-medium ${valueStatus.color}`}>
+                        {valueStatus.label}
+                      </span>
+                    </div>
+                    <p className="text-2xl font-bold text-black mt-1">
+                      {sensor.value}
+                    </p>
                   </div>
-                  <p className="text-2xl font-bold text-black mt-1">
-                    {sensor.value}
-                  </p>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         </div>

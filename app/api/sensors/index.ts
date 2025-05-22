@@ -44,4 +44,15 @@ export interface ApiSensor {
 export const fetchSensorList = async (): Promise<ApiSensor[]> => {
   const res = await axios.get('http://localhost:8080/v0.1/sensors/list');
   return res.data.sensorList;
+};
+
+export interface Threshold {
+  name: string;
+  unit: string;
+  threshold: number;
+}
+
+export const fetchThresholdList = async (): Promise<Threshold[]> => {
+  const res = await axios.get('http://localhost:8080/v0.1/sensors/threshold/list');
+  return res.data.thresholdList;
 }; 

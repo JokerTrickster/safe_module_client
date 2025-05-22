@@ -16,7 +16,8 @@ export default function Home() {
     error, 
     selectedSensor, 
     updateSensorStatus, 
-    selectSensor 
+    selectSensor, 
+    thresholds 
   } = useSensors();
 
   return (
@@ -26,7 +27,7 @@ export default function Home() {
     >
       <div className={styles.sidePanel}>
         <SensorStats sensors={sensors} />
-        <SensorDetails selectedSensor={selectedSensor} />
+        <SensorDetails selectedSensor={selectedSensor} thresholds={thresholds} />
         <TestControls 
           sensors={sensors}
           selectedSensor={selectedSensor}
