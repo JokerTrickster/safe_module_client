@@ -11,6 +11,7 @@ export const mockSensors: Sensor[] = [
     type: "temperature", 
     status: "normal",
     lightStatus: "shutdown",
+    fireDetector: "normal",
     sensors: [
       {
         name: "co2",
@@ -33,6 +34,7 @@ export const mockSensors: Sensor[] = [
     type: "humidity", 
     status: "normal",
     lightStatus: "shutdown",
+    fireDetector: "normal",
     sensors: [
       {
         name: "co2",
@@ -55,6 +57,7 @@ export const mockSensors: Sensor[] = [
     type: "co2", 
     status: "normal",
     lightStatus: "shutdown",
+    fireDetector: "normal",
     sensors: [
       {
         name: "co2",
@@ -87,7 +90,7 @@ export const mapApiSensorToAppSensor = (apiSensor: ApiSensor): Sensor & { fireDe
   status: (apiSensor.sensors[0]?.status as SensorStatus) || 'normal',
   position: apiSensor.position,
   lightStatus: apiSensor.lightStatus === 'normal' ? 'normal' : 'shutdown',
-  fireDetector: apiSensor.fireDetector,
+  fireDetector: apiSensor.fireDetector as 'normal' | 'detection',
   sensors: apiSensor.sensors.map(s => ({
     name: s.name,
     value: s.value,

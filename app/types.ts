@@ -18,6 +18,7 @@ export interface Sensor {
     y: number;
   };
   lightStatus: 'normal' | 'shutdown';
+  fireDetector: 'normal' | 'detection';
   sensors: SensorData[];
 }
 
