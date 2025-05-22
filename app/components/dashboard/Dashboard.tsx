@@ -3,9 +3,11 @@ import FloorPlan from './FloorPlan';
 import SensorStats from './SensorStats';
 import AlarmBanner from './AlarmBanner';
 import { useAlarm } from '../../hooks/useAlarm';
+import { mockSensors } from '../../utils/sensorUtils';
 import { Sensor } from '../../types';
 
 const Dashboard: React.FC = () => {
+  const [sensors, setSensors] = useState<Sensor[]>(mockSensors);
   const [selectedSensor, setSelectedSensor] = useState<Sensor | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
