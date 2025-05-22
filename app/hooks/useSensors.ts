@@ -7,21 +7,35 @@ export const useSensors = () => {
   const [sensors, setSensors] = useState<Sensor[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [selectedSensor, setSelectedSensor] = useState<Sensor | null>(null);
+  const [selectedSensorId, setSelectedSensorId] = useState<string | null>(null);
 
   useEffect(() => {
+    let isMounted = true;
+    let timer: NodeJS.Timeout;
+
     const load = async () => {
-      setIsLoading(true);
       try {
         const apiSensors = await fetchSensorList();
-        setSensors(apiSensors.map(mapApiSensorToAppSensor));
-        setError(null);
+        if (isMounted) {
+          setSensors(apiSensors.map(mapApiSensorToAppSensor));
+          setError(null);
+        }
       } catch (e) {
-        setError('센서 정보를 불러오지 못했습니다.');
+        if (isMounted) setError('센서 정보를 불러오지 못했습니다.');
       }
-      setIsLoading(false);
+      if (isMounted) {
+        timer = setTimeout(load, 500); // 0.5초 후 재호출
+      }
     };
+
+    setIsLoading(true);
     load();
+    setIsLoading(false);
+
+    return () => {
+      isMounted = false;
+      if (timer) clearTimeout(timer);
+    };
   }, []);
 
   const updateSensorStatus = (sensorId: string, status: SensorStatus) => {
@@ -32,13 +46,16 @@ export const useSensors = () => {
     );
   };
 
-  const selectSensor = (sensor: Sensor) => setSelectedSensor(sensor);
+  const selectSensor = (sensor: Sensor) => setSelectedSensorId(sensor.id);
+
+  // 항상 최신 sensors에서 id로 찾아서 반환
+  const currentSensor = sensors.find(s => s.id === selectedSensorId) || null;
 
   return {
     sensors,
     isLoading,
     error,
-    selectedSensor,
+    selectedSensor: currentSensor,
     updateSensorStatus,
     selectSensor,
   };

@@ -17,7 +17,7 @@ const SensorModal: React.FC<SensorModalProps> = ({
   onStatusChange,
   onAlarmToggle
 }) => {
-  const [lightOn, setLightOn] = useState(sensor.lightStatus === 'on');
+  const [lightOn, setLightOn] = useState(sensor.lightStatus === 'normal');
   const [alarmOn, setAlarmOn] = useState(sensor.status === 'danger');
 
   useEffect(() => {

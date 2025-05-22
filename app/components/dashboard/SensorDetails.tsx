@@ -1,15 +1,17 @@
 import React from 'react';
 import { Sensor, SensorStatus } from '../../types';
-import { Lightbulb } from 'lucide-react';
+import { Lightbulb, Flame } from 'lucide-react';
 import styles from '../../styles/components/dashboard.module.css';
 
 interface SensorDetailsProps {
-  selectedSensor: Sensor | null;
+  selectedSensor: (Sensor & { fireDetector?: string }) | null;
 }
 
 const SensorDetails: React.FC<SensorDetailsProps> = ({ selectedSensor }) => {
-  const getStatusColor = (status: SensorStatus) => {
+  // 센서 상태 한글 변환
+  const getStatusColor = (status: string) => {
     switch (status) {
+      case 'error':
       case 'danger':
         return 'text-red-600';
       case 'warning':
@@ -21,14 +23,40 @@ const SensorDetails: React.FC<SensorDetailsProps> = ({ selectedSensor }) => {
     }
   };
 
-  const getStatusText = (status: SensorStatus) => {
+  const getStatusText = (status: string) => {
     switch (status) {
+      case 'warmup':
+        return '부팅중';
+      case 'normal':
+        return '정상 동작 중';
+      case 'error':
+        return '오류 발생';
       case 'danger':
         return '위험';
       case 'warning':
         return '경고';
-      case 'warmup':
-        return '준비중';
+      default:
+        return status;
+    }
+  };
+
+  // 화재감지 상태 한글 변환
+  const getFireDetectorText = (status?: string) => {
+    switch (status) {
+      case 'detection':
+        return '화재 감지';
+      case 'normal':
+      default:
+        return '정상';
+    }
+  };
+
+  // 조명 상태 한글 변환
+  const getLightStatusText = (status?: string) => {
+    switch (status) {
+      case 'shutdown':
+        return '조명 꺼짐';
+      case 'normal':
       default:
         return '정상';
     }
@@ -44,21 +72,39 @@ const SensorDetails: React.FC<SensorDetailsProps> = ({ selectedSensor }) => {
             <p className="text-black font-medium">{selectedSensor.sensor_id}</p>
           </div>
 
+          {/* 조명 상태 */}
           <div className="border-b border-gray-200 pb-3">
             <div className="flex items-center justify-between">
               <p className="text-sm text-gray-600">조명 상태</p>
               <div className="flex items-center">
                 <Lightbulb 
                   size={20} 
-                  className={selectedSensor.lightStatus === 'on' ? "text-yellow-500" : "text-gray-400"} 
+                  className={selectedSensor.lightStatus === 'shutdown' ? "text-gray-400" : "text-yellow-500"} 
                 />
                 <span className="ml-2 text-black">
-                  {selectedSensor.lightStatus === 'on' ? '켜짐' : '꺼짐'}
+                  {getLightStatusText(selectedSensor.lightStatus)}
                 </span>
               </div>
             </div>
           </div>
 
+          {/* 화재감지 상태 */}
+          <div className="border-b border-gray-200 pb-3">
+            <div className="flex items-center justify-between">
+              <p className="text-sm text-gray-600">화재감지 상태</p>
+              <div className="flex items-center">
+                <Flame 
+                  size={20} 
+                  className={selectedSensor.fireDetector === 'detection' ? "text-red-500" : "text-gray-400"} 
+                />
+                <span className="ml-2 text-black">
+                  {getFireDetectorText(selectedSensor.fireDetector)}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* 센서 데이터 */}
           <div>
             <p className="text-sm text-gray-600 mb-2">센서 데이터</p>
             <div className="space-y-3">

@@ -10,7 +10,7 @@ export const mockSensors: Sensor[] = [
     position: { x: 130, y: 30 }, 
     type: "temperature", 
     status: "normal",
-    lightStatus: "off",
+    lightStatus: "shutdown",
     sensors: [
       {
         name: "co2",
@@ -32,7 +32,7 @@ export const mockSensors: Sensor[] = [
     position: { x: 50, y: 40 }, 
     type: "humidity", 
     status: "normal",
-    lightStatus: "off",
+    lightStatus: "shutdown",
     sensors: [
       {
         name: "co2",
@@ -54,7 +54,7 @@ export const mockSensors: Sensor[] = [
     position: { x: 70, y: 60 }, 
     type: "co2", 
     status: "normal",
-    lightStatus: "off",
+    lightStatus: "shutdown",
     sensors: [
       {
         name: "co2",
@@ -78,7 +78,7 @@ export const getSensorsByStatus = (sensors: Sensor[], status: SensorStatus): Sen
   return sensors.filter(sensor => sensor.status === status);
 };
 
-export const mapApiSensorToAppSensor = (apiSensor: ApiSensor): Sensor => ({
+export const mapApiSensorToAppSensor = (apiSensor: ApiSensor): Sensor & { fireDetector: string } => ({
   id: apiSensor.sensorID,
   sensor_id: apiSensor.sensorID,
   name: apiSensor.sensors[0]?.name || apiSensor.sensorID,
@@ -86,7 +86,8 @@ export const mapApiSensorToAppSensor = (apiSensor: ApiSensor): Sensor => ({
   type: (apiSensor.sensors[0]?.name as SensorType) || 'temperature',
   status: (apiSensor.sensors[0]?.status as SensorStatus) || 'normal',
   position: apiSensor.position,
-  lightStatus: apiSensor.lightStatus === 'on' ? 'on' : 'off',
+  lightStatus: apiSensor.lightStatus === 'normal' ? 'normal' : 'shutdown',
+  fireDetector: apiSensor.fireDetector,
   sensors: apiSensor.sensors.map(s => ({
     name: s.name,
     value: s.value,
