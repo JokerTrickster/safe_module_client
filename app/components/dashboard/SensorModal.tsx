@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { X, AlertCircle, Lightbulb, Bell, AlertTriangle } from 'lucide-react';
+import React from 'react';
+import { X, Flame } from 'lucide-react';
 import { Sensor as SensorType } from '../../types';
 
 interface SensorModalProps {
@@ -7,214 +7,90 @@ interface SensorModalProps {
   isOpen: boolean;
   onClose: () => void;
   onStatusChange: (sensorId: string, status: 'normal' | 'warning' | 'danger') => void;
-  onAlarmToggle?: (sensorId: string, isActive: boolean) => void;
 }
 
 const SensorModal: React.FC<SensorModalProps> = ({ 
   sensor, 
   isOpen, 
   onClose,
-  onStatusChange,
-  onAlarmToggle
+  onStatusChange 
 }) => {
-  const [lightOn, setLightOn] = useState(sensor.lightStatus === 'normal');
-  const [alarmOn, setAlarmOn] = useState(sensor.status === 'danger');
-
-  useEffect(() => {
-    setAlarmOn(sensor.status === 'danger');
-  }, [sensor.status]);
-
   if (!isOpen) return null;
 
-  const handleStatusChange = (status: 'normal' | 'warning' | 'danger') => {
-    onStatusChange(sensor.id, status);
-    if (status === 'normal') {
-      setAlarmOn(false);
-      if (onAlarmToggle) onAlarmToggle(sensor.id, false);
-    }
-    if (status === 'danger') {
-      setAlarmOn(true);
-      if (onAlarmToggle) onAlarmToggle(sensor.id, true);
-    }
-  };
+  // 조명 상태 표기
+  const lightingStatusText = sensor.lightStatus === 'shutdown' ? '비정상' : '정상';
+  const lightingStatusColor = sensor.lightStatus === 'shutdown' ? 'text-red-600' : 'text-green-600';
 
-  const getStatusStyles = () => {
-    switch (sensor.status) {
-      case 'normal':
-        return { 
-          text: '정상', 
-          bgColor: 'bg-green-100', 
-          textColor: 'text-green-800',
-          borderColor: 'border-green-500'
-        };
-      case 'warning':
-        return { 
-          text: '경고', 
-          bgColor: 'bg-yellow-100', 
-          textColor: 'text-yellow-800',
-          borderColor: 'border-yellow-500'
-        };
-      case 'danger':
-        return { 
-          text: '위험', 
-          bgColor: 'bg-red-100', 
-          textColor: 'text-red-800',
-          borderColor: 'border-red-500'
-        };
-      default:
-        return { 
-          text: '알 수 없음', 
-          bgColor: 'bg-gray-100', 
-          textColor: 'text-gray-800',
-          borderColor: 'border-gray-500'
-        };
-    }
-  };
+  // 화재 감지 상태 표기
+  const fireStatusDetected = sensor.fireDetector === 'detection';
+  const fireStatusText = fireStatusDetected ? '화재 감지 발생' : '이상없음';
+  const fireStatusColor = fireStatusDetected ? 'text-red-600' : 'text-green-600';
 
-  const statusStyle = getStatusStyles();
-
-  // 비상벨 토글 시 알람배너만 사라지게
-  const handleAlarmToggle = () => {
-    const newAlarmState = !alarmOn;
-    setAlarmOn(newAlarmState);
-    if (onAlarmToggle) onAlarmToggle(sensor.id, newAlarmState);
+  // 화재 감지 처리 버튼 클릭 핸들러
+  const handleFireHandle = () => {
+    onStatusChange(sensor.id, 'normal');
   };
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center z-50 pointer-events-none">
+    <div 
+      className="fixed inset-0 flex items-center justify-center z-50 pointer-events-none"
+    >
       <div 
-        className="bg-white rounded-lg max-w-md w-full p-6 shadow-xl pointer-events-auto"
+        className="bg-white rounded-lg max-w-md w-full p-6 shadow-xl pointer-events-auto text-black"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* 헤더 - 센서 정보 (상태) */}
-        <div className="flex justify-between items-center border-b border-gray-200 pb-4 mb-4">
-          <h2 className="text-xl font-bold text-black flex items-center">
-            <span>센서 정보</span>
-            <span className={`ml-2 text-sm px-2 py-1 rounded-full ${statusStyle.bgColor} ${statusStyle.textColor}`}>
-              {statusStyle.text}
-            </span>
+        <div className="flex justify-between items-center border-b pb-4 mb-4">
+          <h2 className="text-xl font-bold flex items-center">
+            <span className="ml-2">센서 정보</span>
           </h2>
           <button 
             onClick={onClose}
-            className="text-gray-600 hover:text-black transition-colors"
+            className="text-black hover:text-gray-700 transition-colors"
             aria-label="닫기"
           >
             <X size={24} />
           </button>
         </div>
 
-        {/* 센서 ID */}
-        <div className="mb-4">
-          <p className="text-sm text-gray-600">센서 ID</p>
-          <p className="text-lg font-semibold text-black">{sensor.sensor_id}</p>
+        <div className="p-4 rounded-md mb-4 border-l-4 border-gray-300 bg-gray-50">
+          <p className="text-lg font-semibold text-black">{sensor.name}</p>
+          <p className="text-black">ID: {sensor.id}</p>
+          <p className="text-black">
+            타입: {sensor.type}
+          </p>
+          <p className="text-black">
+            위치: X: {sensor.position.x.toFixed(0)}, Y: {sensor.position.y.toFixed(0)}
+          </p>
         </div>
 
-        {/* 센서 데이터 */}
-        <div className="mb-6">
-          <h3 className="text-sm font-medium text-gray-600 mb-3">센서 데이터</h3>
-          <div className="space-y-3">
-            {sensor.sensors.map((sensorData, index) => (
-              <div key={index} className="bg-gray-50 p-3 rounded-md">
-                <div className="flex justify-between items-center">
-                  <span className="text-black font-medium">
-                    {sensorData.name === 'co2' ? '이산화탄소' : '일산화탄소'}
-                  </span>
-                  <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                    sensorData.status === 'danger' ? 'bg-red-100 text-red-800' : 
-                    sensorData.status === 'warning' ? 'bg-yellow-100 text-yellow-800' : 
-                    'bg-green-100 text-green-800'
-                  }`}>
-                    {sensorData.status === 'danger' ? '위험' : 
-                     sensorData.status === 'warning' ? '경고' : '정상'}
-                  </span>
-                </div>
-                <p className="text-2xl font-bold text-black mt-1">
-                  {sensorData.value}
-                </p>
+        <div className="border-t pt-4">
+          <h3 className="font-bold mb-3 text-black">센서 제어</h3>
+          <div className="space-y-4">
+            {/* 조명 상태 */}
+            <div className="flex justify-between items-center">
+              <div className="flex items-center">
+                <span className="font-bold text-black">조명 상태</span>
               </div>
-            ))}
-          </div>
-        </div>
-
-        {/* 제어 섹션 */}
-        <div className="border-t border-gray-200 pt-4">
-          <h3 className="font-bold text-black mb-4">센서 제어</h3>
-          
-          {/* 조명 상태 */}
-          <div className="flex justify-between items-center mb-4">
-            <div className="flex items-center">
-              <Lightbulb size={20} className={lightOn ? "text-yellow-600" : "text-gray-600"} />
-              <span className="ml-2 text-black">조명</span>
+              <span className={`font-bold ${lightingStatusColor}`}>{lightingStatusText}</span>
             </div>
-            <label className="relative inline-flex items-center cursor-pointer">
-              <input 
-                type="checkbox" 
-                className="sr-only peer"
-                checked={lightOn}
-                onChange={() => setLightOn(!lightOn)}
-              />
-              <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
-            </label>
-          </div>
-
-          {/* 비상벨 */}
-          <div className="flex justify-between items-center mb-6">
-            <div className="flex items-center">
-              <Bell size={20} className={alarmOn ? "text-red-600" : "text-gray-600"} />
-              <span className="ml-2 text-black">비상벨</span>
-              {sensor.status === 'danger' && alarmOn && (
-                <span className="ml-2 text-xs text-red-600 animate-pulse">
-                  (활성화됨)
-                </span>
-              )}
+            {/* 화재 감지 상태 */}
+            <div className="flex justify-between items-center">
+              <div className="flex items-center">
+                <Flame size={20} className={fireStatusDetected ? 'text-red-500' : 'text-gray-400'} />
+                <span className="ml-2 font-bold text-black">화재 감지</span>
+              </div>
+              <span className={`font-bold ${fireStatusColor}`}>{fireStatusText}</span>
             </div>
-            <label className="relative inline-flex items-center cursor-pointer">
-              <input 
-                type="checkbox" 
-                className="sr-only peer"
-                checked={alarmOn}
-                onChange={handleAlarmToggle}
-              />
-              <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-red-600"></div>
-            </label>
+            {/* 화재 감지 처리 버튼 */}
+            {fireStatusDetected && (
+              <button
+                className="w-full mt-2 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition-colors font-bold flex items-center justify-center"
+                onClick={handleFireHandle}
+              >
+                <Flame size={18} className="mr-2" /> 화재 감지 처리
+              </button>
+            )}
           </div>
-
-          {/* 센서 상태 변경 버튼 */}
-          <div>
-            <h4 className="mb-2 text-sm font-medium text-black">센서 상태 변경</h4>
-            <div className="flex space-x-2">
-              <button 
-                className={`flex-1 py-2 ${sensor.status === 'normal' ? 'bg-green-600' : 'bg-green-500 hover:bg-green-600'} text-white rounded-md transition-colors flex items-center justify-center`}
-                onClick={() => handleStatusChange('normal')}
-              >
-                <span>정상</span>
-              </button>
-              <button 
-                className={`flex-1 py-2 ${sensor.status === 'warning' ? 'bg-yellow-600' : 'bg-yellow-500 hover:bg-yellow-600'} text-white rounded-md transition-colors flex items-center justify-center`}
-                onClick={() => handleStatusChange('warning')}
-              >
-                <AlertCircle size={16} className="mr-1" />
-                <span>경고</span>
-              </button>
-              <button 
-                className={`flex-1 py-2 ${sensor.status === 'danger' ? 'bg-red-600' : 'bg-red-500 hover:bg-red-600'} text-white rounded-md transition-colors flex items-center justify-center`}
-                onClick={() => handleStatusChange('danger')}
-              >
-                <AlertTriangle size={16} className="mr-1" />
-                <span>위험</span>
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {/* 모달 하단 확인 버튼 */}
-        <div className="border-t border-gray-200 pt-4">
-          <button
-            onClick={onClose}
-            className="w-full py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors flex items-center justify-center"
-          >
-            확인
-          </button>
         </div>
       </div>
     </div>
