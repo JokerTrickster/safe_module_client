@@ -107,27 +107,28 @@ const AlarmBanner: React.FC<AlarmBannerProps> = ({ onStopAlarm, dangerSensors, o
           const coDanger = co && co.value >= 500;
           const fireDetected = sensor.fireDetector === 'detection';
           const lightDanger = sensor.lightStatus === 'shutdown';
+          const isRedBanner = fireDetected || co2Danger || coDanger;
           console.log('조명상태 ' ,sensor.lightStatus);
           return (
             <div
               key={sensor.id}
               className={`
                 flex flex-row items-center gap-4 w-full max-w-2xl px-6 py-5 rounded-xl shadow-2xl border-4
-                ${fireDetected ? 'bg-red-100 border-black-500' : 'bg-yellow-100 border-yellow-400'}
+                ${isRedBanner ? 'bg-red-100 border-red-500' : 'bg-yellow-100 border-yellow-400'}
                 transition-all duration-300
               `}
             >
               <div className={`flex items-center justify-center h-14 w-14 rounded-full bg-white border-2 border-gray-200 shadow mr-2 animate-pulse`}>
-                <Bell className={`h-8 w-8 ${fireDetected ? 'text-red-500' : 'text-yellow-500'}`} />
+                <Bell className={`h-8 w-8 ${isRedBanner ? 'text-red-500' : 'text-yellow-500'}`} />
               </div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 mb-1">
-                  <span className={`text-lg font-bold ${fireDetected ? 'text-red-600' : 'text-yellow-700'}`}>센서 {getSensorShortName(sensor.id)}</span>
-                  {fireDetected && <span className="ml-2 px-2 py-0.5 rounded  text-red-600 text-xs font-semibold">화재 감지</span>}
-                  {co2Danger && <span className="ml-2 px-2 py-0.5 rounded  text-yellow-700 text-xs font-semibold">CO₂ 위험</span>}
-                  {coDanger && <span className="ml-2 px-2 py-0.5 rounded  text-yellow-700 text-xs font-semibold">CO 위험</span>}
+                  <span className={`text-lg font-bold ${isRedBanner ? 'text-red-600' : 'text-yellow-700'}`}>센서 {getSensorShortName(sensor.id)}</span>
+                  {fireDetected && <span className="ml-2 px-2 py-0.5 rounded bg-red-100 text-red-600 text-xs font-semibold">화재 감지</span>}
+                  {co2Danger && <span className="ml-2 px-2 py-0.5 rounded bg-red-100 text-red-600 text-xs font-semibold">CO₂ 위험</span>}
+                  {coDanger && <span className="ml-2 px-2 py-0.5 rounded bg-red-100 text-red-600 text-xs font-semibold">CO 위험</span>}
                 </div>
-                <div className="text-gray-700 text-sm mb-1">
+                <div className="text-red-700 text-sm mb-1">
                   {fireDetected
                     ? '화재가 감지되었습니다! 즉시 확인하세요.'
                     : co2Danger && coDanger
@@ -140,7 +141,7 @@ const AlarmBanner: React.FC<AlarmBannerProps> = ({ onStopAlarm, dangerSensors, o
                 </div>
                 <div className="w-full bg-gray-200 rounded-full h-1 mt-2">
                   <div 
-                    className={`h-1 rounded-full animate-pulse ${fireDetected ? 'bg-red-500' : 'bg-yellow-500'}`}
+                    className={`h-1 rounded-full animate-pulse ${isRedBanner ? 'bg-red-500' : 'bg-yellow-500'}`}
                     style={{ width: '100%' }}
                   ></div>
                 </div>
@@ -149,13 +150,13 @@ const AlarmBanner: React.FC<AlarmBannerProps> = ({ onStopAlarm, dangerSensors, o
                 <button
                   onClick={() => handleClick(sensor.id)}
                   className={`px-5 py-2 rounded-lg text-white font-bold shadow transition-colors text-base
-                    ${fireDetected ? 'bg-red-600 hover:bg-red-700' : 'bg-yellow-500 hover:bg-yellow-600'}`}
+                    ${isRedBanner ? 'bg-red-600 hover:bg-red-700' : 'bg-yellow-500 hover:bg-yellow-600'}`}
                 >
                   확인
                 </button>
                 <button
                   onClick={() => handleCloseAlarm(sensor.id)}
-                  className="text-gray-400 hover:text-gray-600 p-1 rounded-full focus:outline-none"
+                  className={`text-${isRedBanner ? 'red' : 'gray'}-400 hover:text-${isRedBanner ? 'red' : 'gray'}-600 p-1 rounded-full focus:outline-none`}
                   aria-label="알람 닫기"
                 >
                   <X className="h-6 w-6" />
