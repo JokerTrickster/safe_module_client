@@ -25,7 +25,7 @@ export const useSensors = () => {
         if (isMounted) setError('센서 정보를 불러오지 못했습니다.');
       }
       if (isMounted) {
-        timer = setTimeout(load, 500); // 0.5초 후 재호출
+        timer = setTimeout(load, 1000); // 1초 후 재호출
       }
     };
 

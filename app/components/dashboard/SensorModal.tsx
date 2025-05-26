@@ -101,7 +101,7 @@ const SensorModal: React.FC<SensorModalProps> = ({
       style={{ pointerEvents: 'auto' }}
     >
       <div 
-        className="bg-white border-4 border-neutral-300 rounded-lg shadow-xl p-6 max-w-md w-full text-black"
+        className="bg-white border-2 border-black rounded-lg shadow-xl p-6 max-w-md w-full text-black"
         style={{
           position: 'fixed',
           left: position.x,
