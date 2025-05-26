@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { AlertTriangle, X, Bell } from 'lucide-react';
 import SensorModal from './SensorModal';
 import { Sensor } from '../../api/sensors/types';
+import { useSensors } from '@/hooks/useSensors';
+
 
 interface AlarmBannerProps {
   onStopAlarm: (sensorId: string) => void;
@@ -9,12 +11,17 @@ interface AlarmBannerProps {
   onStatusChange: (sensorId: string, status: 'normal' | 'warning' | 'danger') => void;
 }
 
+
 const AlarmBanner: React.FC<AlarmBannerProps> = ({ onStopAlarm, dangerSensors, onStatusChange }) => {
   const [selectedSensor, setSelectedSensor] = useState<Sensor | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [activeAlarms, setActiveAlarms] = useState<Set<string>>(new Set());
   const [audioInitialized, setAudioInitialized] = useState(false);
-
+  const { thresholds} = useSensors();
+  console.log('thresholds', thresholds);
+  const co2Threshold = thresholds.find(t => t.name === 'co2')?.threshold ?? 3000;
+  const coThreshold = thresholds.find(t => t.name === 'co')?.threshold ?? 500;
+  
   // 위험 상태인 센서가 추가되면 자동으로 알람 활성화
   useEffect(() => {
     const dangerIds = new Set(
@@ -24,8 +31,8 @@ const AlarmBanner: React.FC<AlarmBannerProps> = ({ onStopAlarm, dangerSensors, o
           sensor.fireDetector === 'detection' ||
           sensor.lightStatus === 'shutdown' ||
           (sensor.sensors.some(s => 
-            (s.name === 'co2' && s.value >= 3000) || 
-            (s.name === 'co' && s.value >= 500)
+            (s.name === 'co2' && s.value >= co2Threshold) || 
+            (s.name === 'co' && s.value >= coThreshold)
           ))
         )
         .map(sensor => sensor.id)
@@ -84,8 +91,8 @@ const AlarmBanner: React.FC<AlarmBannerProps> = ({ onStopAlarm, dangerSensors, o
       sensor.fireDetector === 'detection' ||
       sensor.lightStatus === 'shutdown' ||
       (sensor.sensors.some(s => 
-        (s.name === 'co2' && s.value >= 3000) || 
-        (s.name === 'co' && s.value >= 500)
+        (s.name === 'co2' && s.value >= co2Threshold) || 
+        (s.name === 'co' && s.value >= coThreshold)
       ))
     )
   );
@@ -103,8 +110,8 @@ const AlarmBanner: React.FC<AlarmBannerProps> = ({ onStopAlarm, dangerSensors, o
           console.log('센서 상태 ' ,sensor);
           const co2 = sensor.sensors.find(s => s.name === 'co2');
           const co = sensor.sensors.find(s => s.name === 'co');
-          const co2Danger = co2 && co2.value >= 3000;
-          const coDanger = co && co.value >= 500;
+          const co2Danger = co2 && co2.value >= co2Threshold;
+          const coDanger = co && co.value >= coThreshold;
           const fireDetected = sensor.fireDetector === 'detection';
           const lightDanger = sensor.lightStatus === 'shutdown';
           const isRedBanner = fireDetected || co2Danger || coDanger;
