@@ -32,6 +32,20 @@ const SensorModal: React.FC<SensorModalProps> = ({
   });
   const dragOffset = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
 
+  React.useEffect(() => {
+    if (isDragging) {
+      window.addEventListener('mousemove', handleMouseMove);
+      window.addEventListener('mouseup', handleMouseUp);
+    } else {
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', handleMouseUp);
+    }
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, [isDragging]);
+
   if (!isOpen) return null;
 
   // 조명 상태 표기
@@ -80,19 +94,6 @@ const SensorModal: React.FC<SensorModalProps> = ({
     setIsDragging(false);
     document.body.style.userSelect = '';
   };
-  React.useEffect(() => {
-    if (isDragging) {
-      window.addEventListener('mousemove', handleMouseMove);
-      window.addEventListener('mouseup', handleMouseUp);
-    } else {
-      window.removeEventListener('mousemove', handleMouseMove);
-      window.removeEventListener('mouseup', handleMouseUp);
-    }
-    return () => {
-      window.removeEventListener('mousemove', handleMouseMove);
-      window.removeEventListener('mouseup', handleMouseUp);
-    };
-  }, [isDragging]);
 
   return (
     <div 
