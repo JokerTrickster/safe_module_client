@@ -1,6 +1,7 @@
 import React from 'react';
 import { Sensor } from '../../api/sensors/types';
 import { Flame, AlertTriangle } from 'lucide-react';
+import { useSensors } from '../../hooks/useSensors';
 
 interface SensorMarkerProps {
   sensor: Sensor;
@@ -12,9 +13,13 @@ const SensorMarker: React.FC<SensorMarkerProps> = ({ sensor, onClick }) => {
   const co2 = sensor.sensors.find(s => s.name === 'co2');
   const co = sensor.sensors.find(s => s.name === 'co');
 
+  const { thresholds} = useSensors();
+  const co2Threshold = thresholds.find(t => t.name === 'co2')?.threshold ?? 3000;
+  const coThreshold = thresholds.find(t => t.name === 'co')?.threshold ?? 500;
+
   // 임계치
-  const co2Danger = co2 && co2.value >= 3000;
-  const coDanger = co && co.value >= 500;
+  const co2Danger = co2 && co2.value >= co2Threshold;
+  const coDanger = co && co.value >= coThreshold;
   const fireDetected = sensor.fireDetector === 'detection';
 
   // 강조 스타일

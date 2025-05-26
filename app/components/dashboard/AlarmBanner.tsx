@@ -102,7 +102,7 @@ const AlarmBanner: React.FC<AlarmBannerProps> = ({ onStopAlarm, dangerSensors, o
   return (
     <>
       <div className={
-        `fixed top-20 right-8 z-50 space-y-4 max-w-2xl w-full flex flex-col items-end`
+        `fixed top-20 right-8 z-50 space-y-2 max-w-md w-full flex flex-col items-end`
       }>
         {visibleSensors.map((sensor) => {
           const co2 = sensor.sensors.find(s => s.name === 'co2');
@@ -116,13 +116,13 @@ const AlarmBanner: React.FC<AlarmBannerProps> = ({ onStopAlarm, dangerSensors, o
             <div
               key={sensor.id}
               className={`
-                flex flex-row items-center gap-4 w-full max-w-2xl px-6 py-5 rounded-xl shadow-2xl border-4
+                flex flex-row items-center gap-2 w-full max-w-md px-3 py-2 rounded-xl shadow-2xl border-4
                 ${isRedBanner ? 'bg-red-100 border-red-500' : 'bg-yellow-100 border-yellow-400'}
                 transition-all duration-300
               `}
             >
-              <div className={`flex items-center justify-center h-14 w-14 rounded-full bg-white border-2 border-gray-200 shadow mr-2 animate-pulse`}>
-                <Bell className={`h-8 w-8 ${isRedBanner ? 'text-red-500' : 'text-yellow-500'}`} />
+              <div className={`flex items-center justify-center h-8 w-8 rounded-full bg-white border-2 border-gray-200 shadow mr-2 animate-pulse`}>
+                <Bell className={`h-5 w-5 ${isRedBanner ? 'text-red-500' : 'text-yellow-500'}`} />
               </div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 mb-1">

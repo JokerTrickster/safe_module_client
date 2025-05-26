@@ -6,6 +6,7 @@ import SensorModal from './SensorModal';
 import LoadingSpinner from '../ui/LoadingSpinner';
 import styles from '../../styles/components/dashboard.module.css';
 import { Flame, AlertTriangle } from 'lucide-react';
+import { useSensors } from '../../hooks/useSensors';
 
 interface FloorPlanProps {
   sensors: SensorType[];
@@ -33,6 +34,10 @@ const FloorPlan: React.FC<FloorPlanProps> = ({
   const containerRef = useRef<HTMLDivElement>(null);
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
   const [isWebViewLoaded, setIsWebViewLoaded] = useState(false);
+
+  const { thresholds} = useSensors();
+  const co2Threshold = thresholds.find(t => t.name === 'co2')?.threshold ?? 3000;
+  const coThreshold = thresholds.find(t => t.name === 'co')?.threshold ?? 500;
 
   // 기본 이미지 크기 상수 (iframe 기준)
   const BASE_IMAGE_WIDTH = 1300;
@@ -75,7 +80,7 @@ const FloorPlan: React.FC<FloorPlanProps> = ({
         const fireActive = sensor.fireDetector === 'detection';
         const co2 = sensor.sensors.find(s => s.name === 'co2');
         const co = sensor.sensors.find(s => s.name === 'co');
-        const gasActive = (co2 && co2.value >= 3000) || (co && co.value >= 500);
+        const gasActive = (co2 && co2.value >= co2Threshold) || (co && co.value >= coThreshold);
         const lightActive = sensor.lightStatus === 'shutdown';
         // 메시지 구조 생성
         const message = {
@@ -187,8 +192,8 @@ const FloorPlan: React.FC<FloorPlanProps> = ({
                   const co2 = sensor.sensors.find(s => s.name === 'co2');
                   const co = sensor.sensors.find(s => s.name === 'co');
                   const fireDetected = sensor.fireDetector === 'detection';
-                  const co2Danger = co2 && co2.value >= 3000;
-                  const coDanger = co && co.value >= 500;
+                  const co2Danger = co2 && co2.value >= co2Threshold;
+                  const coDanger = co && co.value >= coThreshold;
                   const danger = fireDetected || co2Danger || coDanger;
                   return (
                     <div

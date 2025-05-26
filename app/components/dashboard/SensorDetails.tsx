@@ -96,7 +96,7 @@ const SensorDetails: React.FC<SensorDetailsProps> = ({ selectedSensor, threshold
                   size={20} 
                   className={selectedSensor.lightStatus === 'on' ? "text-yellow-500" : "text-gray-400"} 
                 />
-                <span className="ml-2 text-black">
+                <span className={`ml-2 font-bold ${selectedSensor.lightStatus === 'shutdown' ? 'text-red-600' : 'text-green-600'}`}>
                   {selectedSensor.lightStatus === 'on' ? '정상' : '조명 꺼짐'}
                 </span>
               </div>
@@ -112,7 +112,7 @@ const SensorDetails: React.FC<SensorDetailsProps> = ({ selectedSensor, threshold
                   size={20} 
                   className={selectedSensor.fireDetector === 'detection' ? "text-red-500" : "text-gray-400"} 
                 />
-                <span className="ml-2 text-black">
+                <span className={`ml-2 font-bold ${selectedSensor.fireDetector === 'detection' ? 'text-red-600' : 'text-green-600'}`}>
                   {getFireDetectorText(selectedSensor.fireDetector)}
                 </span>
               </div>
