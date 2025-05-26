@@ -22,6 +22,7 @@ const AlarmBanner: React.FC<AlarmBannerProps> = ({ onStopAlarm, dangerSensors, o
         .filter(sensor => 
           sensor.status === 'danger' || 
           sensor.fireDetector === 'detection' ||
+          sensor.lightStatus === 'shutdown' ||
           (sensor.sensors.some(s => 
             (s.name === 'co2' && s.value >= 3000) || 
             (s.name === 'co' && s.value >= 500)
@@ -30,6 +31,7 @@ const AlarmBanner: React.FC<AlarmBannerProps> = ({ onStopAlarm, dangerSensors, o
         .map(sensor => sensor.id)
     );
     setActiveAlarms(dangerIds);
+    console.log('dangerSensors', dangerSensors);
   }, [dangerSensors]);
 
   useEffect(() => {
@@ -80,6 +82,7 @@ const AlarmBanner: React.FC<AlarmBannerProps> = ({ onStopAlarm, dangerSensors, o
     activeAlarms.has(sensor.id) && (
       sensor.status === 'danger' || 
       sensor.fireDetector === 'detection' ||
+      sensor.lightStatus === 'shutdown' ||
       (sensor.sensors.some(s => 
         (s.name === 'co2' && s.value >= 3000) || 
         (s.name === 'co' && s.value >= 500)
@@ -97,12 +100,14 @@ const AlarmBanner: React.FC<AlarmBannerProps> = ({ onStopAlarm, dangerSensors, o
         `fixed top-20 right-8 z-50 space-y-4 max-w-2xl w-full flex flex-col items-end`
       }>
         {visibleSensors.map((sensor) => {
+          console.log('센서 상태 ' ,sensor);
           const co2 = sensor.sensors.find(s => s.name === 'co2');
           const co = sensor.sensors.find(s => s.name === 'co');
           const co2Danger = co2 && co2.value >= 3000;
           const coDanger = co && co.value >= 500;
           const fireDetected = sensor.fireDetector === 'detection';
-
+          const lightDanger = sensor.lightStatus === 'shutdown';
+          console.log('조명상태 ' ,sensor.lightStatus);
           return (
             <div
               key={sensor.id}
@@ -112,19 +117,21 @@ const AlarmBanner: React.FC<AlarmBannerProps> = ({ onStopAlarm, dangerSensors, o
                 transition-all duration-300
               `}
             >
-              <div className={`flex items-center justify-center h-14 w-14 rounded-full bg-white border-2 border-gray-200 shadow mr-2 ${'animate-pulse'}`}>
+              <div className={`flex items-center justify-center h-14 w-14 rounded-full bg-white border-2 border-gray-200 shadow mr-2 animate-pulse`}>
                 <Bell className={`h-8 w-8 ${fireDetected ? 'text-red-500' : 'text-yellow-500'}`} />
               </div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 mb-1">
                   <span className={`text-lg font-bold ${fireDetected ? 'text-red-600' : 'text-yellow-700'}`}>센서 {getSensorShortName(sensor.id)}</span>
-                  {fireDetected && <span className="ml-2 px-2 py-0.5 rounded bg-red-100 text-red-600 text-xs font-semibold">화재 감지</span>}
-                  {co2Danger && !fireDetected && <span className="ml-2 px-2 py-0.5 rounded bg-yellow-100 text-yellow-700 text-xs font-semibold">CO₂ 위험</span>}
-                  {coDanger && !fireDetected && <span className="ml-2 px-2 py-0.5 rounded bg-yellow-100 text-yellow-700 text-xs font-semibold">CO 위험</span>}
+                  {fireDetected && <span className="ml-2 px-2 py-0.5 rounded  text-red-600 text-xs font-semibold">화재 감지</span>}
+                  {co2Danger && <span className="ml-2 px-2 py-0.5 rounded  text-yellow-700 text-xs font-semibold">CO₂ 위험</span>}
+                  {coDanger && <span className="ml-2 px-2 py-0.5 rounded  text-yellow-700 text-xs font-semibold">CO 위험</span>}
                 </div>
                 <div className="text-gray-700 text-sm mb-1">
                   {fireDetected
                     ? '화재가 감지되었습니다! 즉시 확인하세요.'
+                    : co2Danger && coDanger
+                    ? '이산화탄소와 일산화탄소 농도가 모두 위험 수준입니다.'
                     : co2Danger
                     ? '이산화탄소 농도가 위험 수준입니다.'
                     : coDanger

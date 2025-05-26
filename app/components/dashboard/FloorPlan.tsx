@@ -76,7 +76,7 @@ const FloorPlan: React.FC<FloorPlanProps> = ({
         const co2 = sensor.sensors.find(s => s.name === 'co2');
         const co = sensor.sensors.find(s => s.name === 'co');
         const gasActive = (co2 && co2.value >= 3000) || (co && co.value >= 500);
-        const lightActive = sensor.lightStatus !== 'shutdown';
+        const lightActive = sensor.lightStatus === 'shutdown';
         // 메시지 구조 생성
         const message = {
           type: 'SENSOR_ALERTS',
@@ -85,7 +85,7 @@ const FloorPlan: React.FC<FloorPlanProps> = ({
             alerts: {
               fire: { isActive: fireActive },
               gas: { isActive: !!gasActive },
-              light: { isActive: !!lightActive },
+              light: { isActive: lightActive },
             }
           }
         };
