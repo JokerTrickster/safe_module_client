@@ -61,7 +61,38 @@ const FloorPlan: React.FC<FloorPlanProps> = ({
         status
       });
     }
+    // 정상으로 바뀌는 경우 웹뷰(iframe)로 메시지 전송
     if (status === 'normal') {
+      // 센서 정보 찾기
+      const sensor = sensors.find(s => s.id === sensorId || s.sensor_id === sensorId);
+      if (sensor) {
+        // 화재, 가스, 조명 상태 계산
+        const fireActive = sensor.fireDetector === 'detection';
+        const co2 = sensor.sensors.find(s => s.name === 'co2');
+        const co = sensor.sensors.find(s => s.name === 'co');
+        const gasActive = (co2 && co2.value >= 3000) || (co && co.value >= 500);
+        const lightActive = sensor.lightStatus !== 'shutdown';
+        // 메시지 구조 생성
+        const message = {
+          type: 'SENSOR_ALERTS',
+          data: {
+            sensorId: sensor.sensor_id || sensor.id,
+            alerts: {
+              fire: { isActive: fireActive },
+              gas: { isActive: !!gasActive },
+              light: { isActive: !!lightActive },
+            }
+          }
+        };
+        // postMessage로 웹뷰(iframe)에 알림
+        const iframe = document.querySelector('iframe');
+        if (iframe && iframe.contentWindow) {
+          iframe.contentWindow.postMessage(
+            message,
+            'http://localhost:3000'
+          );
+        }
+      }
       setTimeout(() => {
         setIsModalOpen(false);
         setSelectedSensor(null);
