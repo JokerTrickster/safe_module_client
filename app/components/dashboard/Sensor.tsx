@@ -11,6 +11,7 @@ interface SensorProps {
 const Sensor: React.FC<SensorProps> = ({ sensor, onClick }) => {
   const { id, name, status, position } = sensor;
   
+  
   // 센서 상태에 따른 색상 지정
   const statusColorMap: Record<SensorStatus, string> = {
     normal: 'bg-green-500',

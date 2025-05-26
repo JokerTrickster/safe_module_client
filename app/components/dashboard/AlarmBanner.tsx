@@ -18,7 +18,6 @@ const AlarmBanner: React.FC<AlarmBannerProps> = ({ onStopAlarm, dangerSensors, o
   const [activeAlarms, setActiveAlarms] = useState<Set<string>>(new Set());
   const [audioInitialized, setAudioInitialized] = useState(false);
   const { thresholds} = useSensors();
-  console.log('thresholds', thresholds);
   const co2Threshold = thresholds.find(t => t.name === 'co2')?.threshold ?? 3000;
   const coThreshold = thresholds.find(t => t.name === 'co')?.threshold ?? 500;
   
@@ -38,7 +37,6 @@ const AlarmBanner: React.FC<AlarmBannerProps> = ({ onStopAlarm, dangerSensors, o
         .map(sensor => sensor.id)
     );
     setActiveAlarms(dangerIds);
-    console.log('dangerSensors', dangerSensors);
   }, [dangerSensors]);
 
   useEffect(() => {
@@ -107,7 +105,6 @@ const AlarmBanner: React.FC<AlarmBannerProps> = ({ onStopAlarm, dangerSensors, o
         `fixed top-20 right-8 z-50 space-y-4 max-w-2xl w-full flex flex-col items-end`
       }>
         {visibleSensors.map((sensor) => {
-          console.log('센서 상태 ' ,sensor);
           const co2 = sensor.sensors.find(s => s.name === 'co2');
           const co = sensor.sensors.find(s => s.name === 'co');
           const co2Danger = co2 && co2.value >= co2Threshold;
@@ -115,7 +112,6 @@ const AlarmBanner: React.FC<AlarmBannerProps> = ({ onStopAlarm, dangerSensors, o
           const fireDetected = sensor.fireDetector === 'detection';
           const lightDanger = sensor.lightStatus === 'shutdown';
           const isRedBanner = fireDetected || co2Danger || coDanger;
-          console.log('조명상태 ' ,sensor.lightStatus);
           return (
             <div
               key={sensor.id}
