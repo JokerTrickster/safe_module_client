@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { X, Flame } from 'lucide-react';
 import { Sensor as SensorType } from '../../types';
 import { sensorService } from '../../services/sensorService';
@@ -10,6 +10,9 @@ interface SensorModalProps {
   onStatusChange: (sensorId: string, status: 'normal' | 'warning' | 'danger') => void;
 }
 
+const MODAL_WIDTH = 400;
+const MODAL_HEIGHT = 420;
+
 const SensorModal: React.FC<SensorModalProps> = ({ 
   sensor, 
   isOpen, 
@@ -17,6 +20,19 @@ const SensorModal: React.FC<SensorModalProps> = ({
   onStatusChange 
 }) => {
   const [isLoading, setIsLoading] = useState(false);
+  // 드래그 상태 및 위치
+  const [isDragging, setIsDragging] = useState(false);
+  const [position, setPosition] = useState<{ x: number; y: number }>(() => {
+    // 화면 중앙에 위치
+    if (typeof window !== 'undefined') {
+      const x = window.innerWidth / 2 - MODAL_WIDTH / 2;
+      const y = window.innerHeight / 2 - MODAL_HEIGHT / 2;
+      return { x, y };
+    }
+    return { x: 0, y: 0 };
+  });
+  const dragOffset = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
+
   if (!isOpen) return null;
 
   // 조명 상태 표기
@@ -45,15 +61,65 @@ const SensorModal: React.FC<SensorModalProps> = ({
     }
   };
 
+  // 드래그 핸들러
+  const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
+    setIsDragging(true);
+    dragOffset.current = {
+      x: e.clientX - position.x,
+      y: e.clientY - position.y,
+    };
+    document.body.style.userSelect = 'none';
+  };
+  const handleMouseMove = (e: MouseEvent) => {
+    if (!isDragging) return;
+    setPosition({
+      x: e.clientX - dragOffset.current.x,
+      y: e.clientY - dragOffset.current.y,
+    });
+  };
+  const handleMouseUp = () => {
+    setIsDragging(false);
+    document.body.style.userSelect = '';
+  };
+  React.useEffect(() => {
+    if (isDragging) {
+      window.addEventListener('mousemove', handleMouseMove);
+      window.addEventListener('mouseup', handleMouseUp);
+    } else {
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', handleMouseUp);
+    }
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, [isDragging]);
+
   return (
     <div 
-      className="fixed inset-0 flex items-center justify-center z-50 pointer-events-none"
+      className="fixed inset-0 z-50 pointer-events-none"
+      style={{ pointerEvents: 'auto' }}
     >
       <div 
-        className="bg-white rounded-lg max-w-md w-full p-6 shadow-xl pointer-events-auto text-black"
-        onClick={(e) => e.stopPropagation()}
+        className="bg-white rounded-lg max-w-md w-full p-6 shadow-xl text-black"
+        style={{
+          position: 'fixed',
+          left: position.x,
+          top: position.y,
+          width: MODAL_WIDTH,
+          minHeight: MODAL_HEIGHT,
+          cursor: isDragging ? 'grabbing' : 'default',
+          zIndex: 1000,
+          userSelect: isDragging ? 'none' : 'auto',
+        }}
+        onClick={e => e.stopPropagation()}
       >
-        <div className="flex justify-between items-center border-b pb-4 mb-4">
+        {/* 드래그 핸들러 (헤더) */}
+        <div
+          className="flex justify-between items-center border-b pb-4 mb-4 cursor-move select-none"
+          onMouseDown={handleMouseDown}
+          style={{ cursor: 'move' }}
+        >
           <h2 className="text-xl font-bold flex items-center">
             <span className="ml-2">센서 정보</span>
           </h2>
