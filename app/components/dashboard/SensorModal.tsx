@@ -101,7 +101,7 @@ const SensorModal: React.FC<SensorModalProps> = ({
       style={{ pointerEvents: 'auto' }}
     >
       <div 
-        className="bg-white border border-neutral-200 rounded-lg shadow-xl p-6 max-w-md w-full text-black"
+        className="bg-white border-4 border-neutral-300 rounded-lg shadow-xl p-6 max-w-md w-full text-black"
         style={{
           position: 'fixed',
           left: position.x,
@@ -113,10 +113,12 @@ const SensorModal: React.FC<SensorModalProps> = ({
           userSelect: isDragging ? 'none' : 'auto',
         }}
         onClick={e => e.stopPropagation()}
+        onMouseDown={handleMouseDown}
       >
         {/* 닫기 버튼 */}
         <button 
           onClick={onClose}
+          onMouseDown={e => e.stopPropagation()}
           className="absolute top-3 right-3 text-gray-400 hover:text-gray-700 transition-colors rounded-full p-1 focus:outline-none"
           aria-label="닫기"
           tabIndex={0}
@@ -127,8 +129,6 @@ const SensorModal: React.FC<SensorModalProps> = ({
         {/* 드래그 핸들러 (헤더) */}
         <div
           className="flex justify-between items-center border-b pb-3 mb-4 cursor-move select-none"
-          onMouseDown={handleMouseDown}
-          style={{ cursor: 'move' }}
         >
           <h2 className="text-lg font-bold flex items-center">센서 정보</h2>
         </div>
