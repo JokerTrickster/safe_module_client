@@ -55,7 +55,6 @@ const FloorPlan: React.FC<FloorPlanProps> = ({
   // 모달 닫기
   const handleCloseModal = () => {
     setIsModalOpen(false);
-    setSelectedSensor(null);
   };
 
   // 센서 상태 변경 처리
