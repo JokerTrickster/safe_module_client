@@ -1,4 +1,4 @@
-import { sensorApi } from '@/api/sensors';
+import { sensorApi, SensorEventRequest } from '@/api/sensors';
 import { 
   LightStatus, 
   SensorInfo, 
@@ -46,6 +46,16 @@ export const sensorService = {
       return response.data;
     } catch (error) {
       console.error('Failed to fetch sensor list:', error);
+      throw error;
+    }
+  },
+
+  async putSensorEvent(data: SensorEventRequest): Promise<any> {
+    try {
+      const response = await sensorApi.putSensorEvent(data);
+      return response.data;
+    } catch (error) {
+      console.error('Failed to put sensor event:', error);
       throw error;
     }
   },

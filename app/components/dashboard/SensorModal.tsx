@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { X, Flame } from 'lucide-react';
 import { Sensor as SensorType } from '../../types';
+import { sensorService } from '../../services/sensorService';
 
 interface SensorModalProps {
   sensor: SensorType;
@@ -15,6 +16,7 @@ const SensorModal: React.FC<SensorModalProps> = ({
   onClose,
   onStatusChange 
 }) => {
+  const [isLoading, setIsLoading] = useState(false);
   if (!isOpen) return null;
 
   // 조명 상태 표기
@@ -27,8 +29,20 @@ const SensorModal: React.FC<SensorModalProps> = ({
   const fireStatusColor = fireStatusDetected ? 'text-red-600' : 'text-green-600';
 
   // 화재 감지 처리 버튼 클릭 핸들러
-  const handleFireHandle = () => {
-    onStatusChange(sensor.id, 'normal');
+  const handleFireHandle = async () => {
+    setIsLoading(true);
+    try {
+      await sensorService.putSensorEvent({
+        sensor_id: sensor.id,
+        status: 'detection',
+        type: 'fire',
+      });
+      onStatusChange(sensor.id, 'normal');
+    } catch (error) {
+      console.error('Failed to put sensor event:', error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -84,10 +98,12 @@ const SensorModal: React.FC<SensorModalProps> = ({
             {/* 화재 감지 처리 버튼 */}
             {fireStatusDetected && (
               <button
-                className="w-full mt-2 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition-colors font-bold flex items-center justify-center"
+                className="w-full mt-2 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition-colors font-bold flex items-center justify-center disabled:opacity-60"
                 onClick={handleFireHandle}
+                disabled={isLoading}
               >
-                <Flame size={18} className="mr-2" /> 화재 감지 처리
+                <Flame size={18} className="mr-2" />
+                {isLoading ? '처리 중...' : '화재 감지 처리'}
               </button>
             )}
           </div>
