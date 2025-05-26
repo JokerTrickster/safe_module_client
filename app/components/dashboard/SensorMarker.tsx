@@ -1,5 +1,5 @@
 import React from 'react';
-import { Sensor } from '../../types';
+import { Sensor } from '../../api/sensors/types';
 import { Flame, AlertTriangle } from 'lucide-react';
 
 interface SensorMarkerProps {

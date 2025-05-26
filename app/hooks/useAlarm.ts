@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Sensor } from '../types';
+import { Sensor } from '../api/sensors/types';
 import { playAlarm, stopAlarm } from '../utils/alarmUtils';
 
 export const useAlarm = (sensors: Sensor[], thresholds: { name: string; threshold: number }[] = []) => {

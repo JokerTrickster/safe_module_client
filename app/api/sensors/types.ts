@@ -1,4 +1,4 @@
-export type LightStatus = 'on' | 'off';
+export type LightStatus = 'on' | 'off' | 'shutdown';
 export type SensorStatus = 'normal' | 'warmup' | 'warning' | 'danger';
 
 export interface SensorData {
@@ -37,11 +37,16 @@ export interface LightControlResponse {
 
 export interface Sensor {
   id: string;
+  sensor_id: string;
+  label?: string;
   name: string;
-  type: 'temperature' | 'humidity' | 'pressure';
+  type: 'temperature' | 'humidity' | 'pressure' | 'co2' | 'co';
   status: SensorStatus;
   position: {
     x: number;
     y: number;
   };
+  lightStatus: LightStatus;
+  fireDetector: 'detection' | 'normal';
+  sensors: SensorData[];
 } 

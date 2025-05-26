@@ -1,6 +1,6 @@
 import React, { useRef, useEffect, useState } from 'react';
 import Image from 'next/image';
-import { Sensor as SensorType } from '../../types';
+import { Sensor as SensorType } from '../../api/sensors/types';
 import Sensor from './Sensor';
 import SensorModal from './SensorModal';
 import LoadingSpinner from '../ui/LoadingSpinner';
@@ -13,6 +13,10 @@ interface FloorPlanProps {
   onSensorClick: (sensor: SensorType) => void;
   onStatusChange?: (sensorId: string, status: 'normal' | 'warning' | 'danger') => void;
   onSensorsUpdate?: (updatedSensors: SensorType[]) => void;
+  selectedSensor: SensorType | null;
+  setSelectedSensor: (sensor: SensorType | null) => void;
+  isModalOpen: boolean;
+  setIsModalOpen: (open: boolean) => void;
 }
 
 const FloorPlan: React.FC<FloorPlanProps> = ({ 
@@ -20,13 +24,15 @@ const FloorPlan: React.FC<FloorPlanProps> = ({
   isLoading, 
   onSensorClick,
   onStatusChange = () => {},
-  onSensorsUpdate = () => {}
+  onSensorsUpdate = () => {},
+  selectedSensor,
+  setSelectedSensor,
+  isModalOpen,
+  setIsModalOpen,
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
   const [isWebViewLoaded, setIsWebViewLoaded] = useState(false);
-  const [selectedSensor, setSelectedSensor] = useState<SensorType | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
 
   // 기본 이미지 크기 상수 (iframe 기준)
   const BASE_IMAGE_WIDTH = 1300;
@@ -55,7 +61,7 @@ const FloorPlan: React.FC<FloorPlanProps> = ({
   // 센서 상태 변경 처리
   const handleStatusChange = (sensorId: string, status: 'normal' | 'warning' | 'danger') => {
     onStatusChange(sensorId, status);
-    if (selectedSensor && selectedSensor.id === sensorId) {
+    if (selectedSensor && (selectedSensor.id === sensorId || selectedSensor.sensor_id === sensorId)) {
       setSelectedSensor({
         ...selectedSensor,
         status
@@ -121,13 +127,14 @@ const FloorPlan: React.FC<FloorPlanProps> = ({
   useEffect(() => {
     const handleMessage = (event: MessageEvent) => {
       if (event.origin === 'http://localhost:3000') {
-        console.log('[WebView Message!!!]', event.data);
-        const jsonData = JSON.parse(event.data);
+        let jsonData;
+        try {
+          jsonData = typeof event.data === 'string' ? JSON.parse(event.data) : event.data;
+        } catch {
+          return;
+        }
         if (jsonData.type === 'SENSOR_ID') {
-          // 항상 최신 sensors로 조회
           const sensor = sensors.find(s => s.sensor_id === jsonData.data.sensorId);
-          console.log("sensors", sensors);
-          console.log(jsonData.data.sensorId);
           if (sensor) {
             setSelectedSensor(sensor);
             setIsModalOpen(true);
@@ -139,7 +146,7 @@ const FloorPlan: React.FC<FloorPlanProps> = ({
     return () => {
       window.removeEventListener('message', handleMessage);
     };
-  }, [sensors]);
+  }, [sensors, setSelectedSensor]);
 
   return (
     <div 

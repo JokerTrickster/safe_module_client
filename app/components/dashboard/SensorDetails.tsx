@@ -1,5 +1,5 @@
 import React from 'react';
-import { Sensor, SensorStatus } from '../../types';
+import { Sensor, SensorStatus } from '../../api/sensors/types';
 import { Lightbulb, Flame } from 'lucide-react';
 import styles from '../../styles/components/dashboard.module.css';
 
@@ -88,10 +88,10 @@ const SensorDetails: React.FC<SensorDetailsProps> = ({ selectedSensor, threshold
               <div className="flex items-center">
                 <Lightbulb 
                   size={20} 
-                  className={selectedSensor.lightStatus === 'normal' ? "text-yellow-500" : "text-gray-400"} 
+                  className={selectedSensor.lightStatus === 'on' ? "text-yellow-500" : "text-gray-400"} 
                 />
                 <span className="ml-2 text-black">
-                  {selectedSensor.lightStatus === 'normal' ? '정상' : '조명 꺼짐'}
+                  {selectedSensor.lightStatus === 'on' ? '정상' : '조명 꺼짐'}
                 </span>
               </div>
             </div>

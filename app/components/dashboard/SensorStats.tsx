@@ -1,5 +1,5 @@
 import React from 'react';
-import { Sensor } from '../../types';
+import { Sensor } from '../../api/sensors/types';
 import { Lightbulb, Flame, AlertTriangle } from 'lucide-react';
 
 interface SensorStatsProps {
@@ -53,7 +53,7 @@ const SensorStats: React.FC<SensorStatsProps> = ({ sensors, thresholds }) => {
                       <Lightbulb
                         size={18}
                         className={
-                          sensor.lightStatus === 'normal'
+                          sensor.lightStatus === 'on'
                             ? 'text-yellow-500'
                             : 'text-gray-400'
                         }

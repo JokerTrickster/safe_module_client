@@ -2,7 +2,7 @@ import React from 'react';
 import { Bell, Settings, User } from 'lucide-react';
 import Header from './Header';
 import { useAlarm } from '../../hooks/useAlarm';
-import { Sensor } from '../../types';
+import { Sensor } from '../../api/sensors/types';
 
 interface DashboardLayoutProps {
   children: React.ReactNode;

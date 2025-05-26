@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { AlertTriangle, X, Bell } from 'lucide-react';
 import SensorModal from './SensorModal';
-import { Sensor } from '../../types';
+import { Sensor } from '../../api/sensors/types';
 
 interface AlarmBannerProps {
   onStopAlarm: (sensorId: string) => void;
@@ -183,7 +183,6 @@ const AlarmBanner: React.FC<AlarmBannerProps> = ({ onStopAlarm, dangerSensors, o
           isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}
           onStatusChange={onStatusChange}
-          onAlarmToggle={handleAlarmToggle}
         />
       )}
     </>

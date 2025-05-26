@@ -1,5 +1,5 @@
 import React from 'react';
-import { Sensor as SensorType, SensorStatus } from '../../types';
+import { Sensor as SensorType, SensorStatus } from '../../api/sensors/types';
 import { AlertTriangle } from 'lucide-react';
 import styles from '../../styles/components/dashboard.module.css';
 

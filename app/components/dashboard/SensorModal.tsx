@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { X, Flame } from 'lucide-react';
-import { Sensor as SensorType } from '../../types';
+import { Sensor as SensorType } from '../../api/sensors/types';
 import { sensorService } from '../../services/sensorService';
 
 interface SensorModalProps {
@@ -23,7 +23,6 @@ const SensorModal: React.FC<SensorModalProps> = ({
   // 드래그 상태 및 위치
   const [isDragging, setIsDragging] = useState(false);
   const [position, setPosition] = useState<{ x: number; y: number }>(() => {
-    // 화면 중앙에 위치
     if (typeof window !== 'undefined') {
       const x = window.innerWidth / 2 - MODAL_WIDTH / 2;
       const y = window.innerHeight / 2 - MODAL_HEIGHT / 2;
@@ -101,7 +100,7 @@ const SensorModal: React.FC<SensorModalProps> = ({
       style={{ pointerEvents: 'auto' }}
     >
       <div 
-        className="bg-white rounded-lg max-w-md w-full p-6 shadow-xl text-black"
+        className="bg-white border border-neutral-200 rounded-lg shadow-xl p-6 max-w-md w-full text-black"
         style={{
           position: 'fixed',
           left: position.x,
@@ -114,65 +113,78 @@ const SensorModal: React.FC<SensorModalProps> = ({
         }}
         onClick={e => e.stopPropagation()}
       >
+        {/* 닫기 버튼 */}
+        <button 
+          onClick={onClose}
+          className="absolute top-3 right-3 text-gray-400 hover:text-gray-700 transition-colors rounded-full p-1 focus:outline-none"
+          aria-label="닫기"
+          tabIndex={0}
+        >
+          <X size={22} />
+        </button>
+
         {/* 드래그 핸들러 (헤더) */}
         <div
-          className="flex justify-between items-center border-b pb-4 mb-4 cursor-move select-none"
+          className="flex justify-between items-center border-b pb-3 mb-4 cursor-move select-none"
           onMouseDown={handleMouseDown}
           style={{ cursor: 'move' }}
         >
-          <h2 className="text-xl font-bold flex items-center">
-            <span className="ml-2">센서 정보</span>
-          </h2>
-          <button 
-            onClick={onClose}
-            className="text-black hover:text-gray-700 transition-colors"
-            aria-label="닫기"
-          >
-            <X size={24} />
-          </button>
+          <h2 className="text-lg font-bold flex items-center">센서 정보</h2>
         </div>
 
-        <div className="p-4 rounded-md mb-4 border-l-4 border-gray-300 bg-gray-50">
-          <p className="text-lg font-semibold text-black">{sensor.name}</p>
-          <p className="text-black">ID: {sensor.id}</p>
-          <p className="text-black">
-            타입: {sensor.type}
-          </p>
-          <p className="text-black">
-            위치: X: {sensor.position.x.toFixed(0)}, Y: {sensor.position.y.toFixed(0)}
-          </p>
-        </div>
-
-        <div className="border-t pt-4">
-          <h3 className="font-bold mb-3 text-black">센서 제어</h3>
-          <div className="space-y-4">
-            {/* 조명 상태 */}
-            <div className="flex justify-between items-center">
-              <div className="flex items-center">
-                <span className="font-bold text-black">조명 상태</span>
-              </div>
-              <span className={`font-bold ${lightingStatusColor}`}>{lightingStatusText}</span>
-            </div>
-            {/* 화재 감지 상태 */}
-            <div className="flex justify-between items-center">
-              <div className="flex items-center">
-                <Flame size={20} className={fireStatusDetected ? 'text-red-500' : 'text-gray-400'} />
-                <span className="ml-2 font-bold text-black">화재 감지</span>
-              </div>
-              <span className={`font-bold ${fireStatusColor}`}>{fireStatusText}</span>
-            </div>
-            {/* 화재 감지 처리 버튼 */}
-            {fireStatusDetected && (
-              <button
-                className="w-full mt-2 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition-colors font-bold flex items-center justify-center disabled:opacity-60"
-                onClick={handleFireHandle}
-                disabled={isLoading}
-              >
-                <Flame size={18} className="mr-2" />
-                {isLoading ? '처리 중...' : '화재 감지 처리'}
-              </button>
-            )}
+        {/* 센서 정보 상세 */}
+        <div className="space-y-3 mb-4">
+          <div className="flex justify-between items-center">
+            <span className="text-gray-500 font-medium">ID</span>
+            <span className="font-mono text-sm text-black">{sensor.sensor_id}</span>
           </div>
+          <div className="flex justify-between items-center">
+            <span className="text-gray-500 font-medium">타입</span>
+            <span className="text-black font-semibold">{sensor.type}</span>
+          </div>
+          <div className="flex justify-between items-center">
+            <span className="text-gray-500 font-medium">값</span>
+            <span className="text-black font-semibold">
+              {sensor.sensors.map((s, i) => (
+                <span key={i} className="inline-block mr-2">
+                  {s.name.toUpperCase()}: {s.value}
+                </span>
+              ))}
+            </span>
+          </div>
+          <div className="flex justify-between items-center">
+            <span className="text-gray-500 font-medium">위치</span>
+            <span className="text-black font-semibold">
+              X: {sensor.position.x}, Y: {sensor.position.y}
+            </span>
+          </div>
+        </div>
+
+        <div className="border-t pt-4 space-y-4">
+          {/* 조명 상태 */}
+          <div className="flex justify-between items-center">
+            <span className="font-bold text-black">조명 상태</span>
+            <span className={`font-bold ${lightingStatusColor}`}>{lightingStatusText}</span>
+          </div>
+          {/* 화재 감지 상태 */}
+          <div className="flex justify-between items-center">
+            <div className="flex items-center">
+              <Flame size={20} className={fireStatusDetected ? 'text-red-500' : 'text-gray-400'} />
+              <span className="ml-2 font-bold text-black">화재 감지</span>
+            </div>
+            <span className={`font-bold ${fireStatusColor}`}>{fireStatusText}</span>
+          </div>
+          {/* 화재 감지 처리 버튼 */}
+          {fireStatusDetected && (
+            <button
+              className="w-full mt-2 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition-colors font-bold flex items-center justify-center disabled:opacity-60"
+              onClick={handleFireHandle}
+              disabled={isLoading}
+            >
+              <Flame size={18} className="mr-2" />
+              {isLoading ? '처리 중...' : '화재 감지 처리'}
+            </button>
+          )}
         </div>
       </div>
     </div>

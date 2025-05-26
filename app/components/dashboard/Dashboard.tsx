@@ -4,7 +4,7 @@ import SensorStats from './SensorStats';
 import AlarmBanner from './AlarmBanner';
 import { useAlarm } from '../../hooks/useAlarm';
 import { mockSensors } from '../../utils/sensorUtils';
-import { Sensor } from '../../types';
+import { Sensor } from '../../api/sensors/types';
 
 const thresholds = [
   { name: 'co2', threshold: 3000 },
@@ -33,6 +33,11 @@ const Dashboard: React.FC = () => {
     );
   };
 
+  const handleSensorClick = (sensor: Sensor) => {
+    setSelectedSensor(sensor);
+    setIsModalOpen(true);
+  };
+
   return (
     <div className="relative min-h-screen bg-gray-100">
       <div className="flex flex-row h-[900px] max-w-[1400px] mx-auto py-8">
@@ -46,11 +51,12 @@ const Dashboard: React.FC = () => {
             <FloorPlan
               sensors={sensors}
               isLoading={false}
-              onSensorClick={(sensor) => {
-                setSelectedSensor(sensor);
-                setIsModalOpen(true);
-              }}
+              onSensorClick={handleSensorClick}
               onStatusChange={handleStatusChange}
+              selectedSensor={selectedSensor}
+              setSelectedSensor={setSelectedSensor}
+              isModalOpen={isModalOpen}
+              setIsModalOpen={setIsModalOpen}
             />
           </div>
         </main>

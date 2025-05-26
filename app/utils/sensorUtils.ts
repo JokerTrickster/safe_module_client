@@ -1,4 +1,4 @@
-import { Sensor, SensorType, SensorStatus } from '../types';
+import { Sensor, SensorStatus } from '../api/sensors/types';
 import { ApiSensor } from '../api/sensors';
 
 export const mockSensors: Sensor[] = [
@@ -10,7 +10,7 @@ export const mockSensors: Sensor[] = [
     position: { x: 130, y: 30 }, 
     type: "co2", 
     status: "normal",
-    lightStatus: "shutdown",
+    lightStatus: "on",
     fireDetector: "normal",
     sensors: [
       {
@@ -33,7 +33,7 @@ export const mockSensors: Sensor[] = [
     position: { x: 50, y: 40 }, 
     type: "co2", 
     status: "normal",
-    lightStatus: "shutdown",
+    lightStatus: "on",
     fireDetector: "normal",
     sensors: [
       {
@@ -56,7 +56,7 @@ export const mockSensors: Sensor[] = [
     position: { x: 70, y: 60 }, 
     type: "co2", 
     status: "normal",
-    lightStatus: "shutdown",
+    lightStatus: "off",
     fireDetector: "normal",
     sensors: [
       {
@@ -73,7 +73,7 @@ export const mockSensors: Sensor[] = [
   }
 ];
 
-export const getSensorsByType = (sensors: Sensor[], type: SensorType): Sensor[] => {
+export const getSensorsByType = (sensors: Sensor[], type: Sensor['type']): Sensor[] => {
   return sensors.filter(sensor => sensor.type === type);
 };
 
@@ -86,10 +86,10 @@ export const mapApiSensorToAppSensor = (apiSensor: ApiSensor): Sensor & { fireDe
   sensor_id: apiSensor.sensorID,
   name: apiSensor.sensors[0]?.name || apiSensor.sensorID,
   label: apiSensor.sensors[0]?.name || apiSensor.sensorID,
-  type: (apiSensor.sensors[0]?.name as SensorType) || 'co2',
+  type: (apiSensor.sensors[0]?.name as Sensor['type']) || 'co2',
   status: (apiSensor.sensors[0]?.status as SensorStatus) || 'normal',
   position: apiSensor.position,
-  lightStatus: apiSensor.lightStatus === 'normal' ? 'normal' : 'shutdown',
+  lightStatus: apiSensor.lightStatus === 'on' || apiSensor.lightStatus === 'off' || apiSensor.lightStatus === 'shutdown' ? apiSensor.lightStatus : 'on',
   fireDetector: apiSensor.fireDetector as 'normal' | 'detection',
   sensors: apiSensor.sensors.map(s => ({
     name: s.name,

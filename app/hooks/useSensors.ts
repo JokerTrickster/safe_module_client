@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { fetchSensorList, fetchThresholdList, Threshold } from '../api/sensors';
 import { mapApiSensorToAppSensor } from '../utils/sensorUtils';
-import { Sensor, SensorStatus } from '../types';
+import { Sensor, SensorStatus } from '../api/sensors/types';
 
 export const useSensors = () => {
   const [sensors, setSensors] = useState<Sensor[]>([]);

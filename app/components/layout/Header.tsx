@@ -1,7 +1,7 @@
 import React from 'react';
 import styles from '../../styles/components/layout.module.css';
 import AlarmBanner from '../dashboard/AlarmBanner';
-import { Sensor } from '../../types';
+import { Sensor } from '../../api/sensors/types';
 
 interface HeaderProps {
   alarmActive: boolean;
