@@ -67,6 +67,7 @@ const SensorModal: React.FC<SensorModalProps> = ({
         type: 'fire',
       });
       onStatusChange(sensor.id, 'normal');
+      onClose();
     } catch (error) {
       console.error('Failed to put sensor event:', error);
     } finally {
