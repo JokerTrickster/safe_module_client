@@ -71,6 +71,12 @@ const SensorDetails: React.FC<SensorDetailsProps> = ({ selectedSensor, threshold
     }
   };
 
+  // 임계치 값 찾기
+  const getThreshold = (name: string) => {
+    const found = thresholds.find(t => t.name === name);
+    return found ? found.threshold : undefined;
+  };
+
   return (
     <div className="bg-white rounded-lg shadow-md p-4">
       <h2 className="text-xl font-bold text-black mb-4">센서 상세 정보</h2>
@@ -118,6 +124,7 @@ const SensorDetails: React.FC<SensorDetailsProps> = ({ selectedSensor, threshold
             <p className="text-sm text-gray-600 mb-2">센서 데이터</p>
             <div className="space-y-3">
               {selectedSensor.sensors.map((sensor, index) => {
+                const threshold = getThreshold(sensor.name);
                 const valueStatus = getValueStatus(sensor.name, sensor.value, thresholds);
                 return (
                   <div key={index} className="bg-gray-50 p-3 rounded-md">
@@ -125,12 +132,15 @@ const SensorDetails: React.FC<SensorDetailsProps> = ({ selectedSensor, threshold
                       <span className="text-black font-medium">
                         {sensor.name === 'co2' ? '이산화탄소' : '일산화탄소'}
                       </span>
-                      <span className={`font-medium ${valueStatus.color}`}>
+                      <span className={`font-medium ${valueStatus.color}`}> 
                         {valueStatus.label}
                       </span>
                     </div>
                     <p className="text-2xl font-bold text-black mt-1">
                       {sensor.value}
+                      {threshold !== undefined && (
+                        <span className="text-gray-500 text-base ml-2">/ {threshold}</span>
+                      )}
                     </p>
                   </div>
                 );
