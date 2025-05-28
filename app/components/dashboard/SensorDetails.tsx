@@ -1,6 +1,6 @@
 import React from 'react';
 import { Sensor, SensorStatus } from '../../api/sensors/types';
-import { Lightbulb, Flame } from 'lucide-react';
+import { Lightbulb, Flame, User } from 'lucide-react';
 import styles from '../../styles/components/dashboard.module.css';
 
 interface SensorDetailsProps {
@@ -77,6 +77,17 @@ const SensorDetails: React.FC<SensorDetailsProps> = ({ selectedSensor, threshold
     return found ? found.threshold : undefined;
   };
 
+  // 모션 감지 상태 한글 변환
+  const getMotionDetectionText = (status?: string) => {
+    switch (status) {
+      case 'detection':
+        return '감지';
+      case 'normal':
+      default:
+        return '정상';
+    }
+  };
+
   return (
     <div className="bg-white rounded-lg shadow-md p-4">
       <h2 className="text-xl font-bold text-black mb-4">센서 상세 정보</h2>
@@ -113,7 +124,25 @@ const SensorDetails: React.FC<SensorDetailsProps> = ({ selectedSensor, threshold
                   className={selectedSensor.fireDetector === 'detection' ? "text-red-500" : "text-gray-400"} 
                 />
                 <span className={`ml-2 font-bold ${selectedSensor.fireDetector === 'detection' ? 'text-red-600' : 'text-green-600'}`}>
-                  {getFireDetectorText(selectedSensor.fireDetector)}
+                  {selectedSensor.fireDetector === 'detection' ? '화재 감지' : '정상'}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* 모션 감지 상태 */}
+          <div className="border-b border-gray-200 pb-3">
+            <div className="flex items-center justify-between">
+              <p className="text-sm text-gray-600">모션 감지 상태</p>
+              <div className="flex items-center">
+                <User
+                  size={20}
+                  className={selectedSensor.motionDetection === 'detection' ? "text-red-500" : "text-gray-400"}
+                  aria-label="모션 감지"
+                  tabIndex={0}
+                />
+                <span className={`ml-2 font-bold ${selectedSensor.motionDetection === 'detection' ? 'text-red-600' : 'text-green-600'}`}>
+                  {selectedSensor.motionDetection === 'detection' ? '감지' : '정상'}
                 </span>
               </div>
             </div>
