@@ -41,7 +41,7 @@ export interface Sensor {
   sensor_id: string;
   label?: string;
   name: string;
-  type: 'temperature' | 'humidity' | 'pressure' | 'co2' | 'co';
+  type: 'co2' | 'co';
   status: SensorStatus;
   position: {
     x: number;

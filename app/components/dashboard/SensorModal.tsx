@@ -142,16 +142,40 @@ const SensorModal: React.FC<SensorModalProps> = ({
           </div>
           <div className="flex justify-between items-center">
             <span className="text-gray-500 font-medium">타입</span>
-            <span className="text-black font-semibold">{sensor.type}</span>
+            <span className="text-black font-semibold">
+              {sensor.type === 'co2'
+                ? '이산화탄소 (CO2)'
+                : sensor.type === 'co'
+                ? '일산화탄소 (CO)'
+                : sensor.type}
+            </span>
           </div>
           <div className="flex justify-between items-center">
             <span className="text-gray-500 font-medium">값</span>
             <span className="text-black font-semibold">
-              {sensor.sensors.map((s, i) => (
-                <span key={i} className="inline-block mr-2">
-                  {s.name.toUpperCase()}: {s.value}
-                </span>
-              ))}
+              {sensor.sensors.map((s, i) => {
+                let threshold;
+                if (s.name === 'co2') {
+                  threshold = 3000;
+                } else if (s.name === 'co') {
+                  threshold = 500;
+                }
+                // 센서명 한글 변환
+                const label =
+                  s.name === 'co2'
+                    ? '이산화탄소'
+                    : s.name === 'co'
+                    ? '일산화탄소'
+                    : s.name;
+                return (
+                  <span key={i} className="inline-block mr-2">
+                    {s.value}
+                    {threshold !== undefined && (
+                      <span className="text-gray-500 text-xs ml-1">/ {threshold}</span>
+                    )}
+                  </span>
+                );
+              })}
             </span>
           </div>
           <div className="flex justify-between items-center">
