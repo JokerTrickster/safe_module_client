@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { X, Flame } from 'lucide-react';
+import { X, Flame, User, Lightbulb } from 'lucide-react';
 import { Sensor as SensorType } from '../../api/sensors/types';
 import { sensorService } from '../../services/sensorService';
 
@@ -165,7 +165,15 @@ const SensorModal: React.FC<SensorModalProps> = ({
         <div className="border-t pt-4 space-y-4">
           {/* 조명 상태 */}
           <div className="flex justify-between items-center">
-            <span className="font-bold text-black">조명 상태</span>
+            <div className="flex items-center">
+              <Lightbulb
+                size={20}
+                className={sensor.lightStatus === 'on' ? 'text-yellow-500' : 'text-gray-400'}
+                aria-label="조명 상태"
+                tabIndex={0}
+              />
+              <span className="ml-2 font-bold text-black">조명 상태</span>
+            </div>
             <span className={`font-bold ${lightingStatusColor}`}>{lightingStatusText}</span>
           </div>
           {/* 화재 감지 상태 */}
@@ -175,6 +183,21 @@ const SensorModal: React.FC<SensorModalProps> = ({
               <span className="ml-2 font-bold text-black">화재 감지</span>
             </div>
             <span className={`font-bold ${fireStatusColor}`}>{fireStatusText}</span>
+          </div>
+          {/* 모션 감지 상태 */}
+          <div className="flex justify-between items-center">
+            <div className="flex items-center">
+              <User
+                size={20}
+                className={sensor.motionDetection === 'detection' ? 'text-red-500' : 'text-gray-400'}
+                aria-label="모션 감지"
+                tabIndex={0}
+              />
+              <span className="ml-2 font-bold text-black">모션 감지</span>
+            </div>
+            <span className={`font-bold ${sensor.motionDetection === 'detection' ? 'text-red-600' : 'text-green-600'}`}>
+              {sensor.motionDetection === 'detection' ? '감지' : '정상'}
+            </span>
           </div>
           {/* 화재 감지 처리 버튼 */}
           {fireStatusDetected && (
