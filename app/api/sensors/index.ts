@@ -42,6 +42,7 @@ export const sensorApi = {
 export interface ApiSensor {
   fireDetector: string;
   lightStatus: string;
+  motionDetection: string;
   position: { x: number; y: number };
   sensorID: string;
   sensors: {

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Sensor } from '../../api/sensors/types';
-import { Lightbulb, Flame, AlertTriangle } from 'lucide-react';
+import { Lightbulb, Flame, AlertTriangle, User } from 'lucide-react';
 
 interface SensorStatsProps {
   sensors: Sensor[];
@@ -22,9 +22,10 @@ const SensorStats: React.FC<SensorStatsProps> = ({ sensors, thresholds }) => {
             <tr className="bg-gray-100">
               <th className="px-4 py-2 font-semibold text-gray-700">센서 ID</th>
               <th className="px-4 py-2 font-semibold text-gray-700">조명 상태</th>
-              <th className="px-4 py-2 font-semibold text-gray-700">화재감지</th>
-              <th className="px-4 py-2 font-semibold text-gray-700">CO₂ (ppm)</th>
-              <th className="px-4 py-2 font-semibold text-gray-700">CO (ppm)</th>
+              <th className="px-4 py-2 font-semibold text-gray-700">모션 감지</th>
+              <th className="px-4 py-2 font-semibold text-gray-700">화재 감지</th>
+              <th className="px-4 py-2 font-semibold text-gray-700">CO₂</th>
+              <th className="px-4 py-2 font-semibold text-gray-700">CO</th>
             </tr>
           </thead>
           <tbody>
@@ -35,6 +36,7 @@ const SensorStats: React.FC<SensorStatsProps> = ({ sensors, thresholds }) => {
               const co2Warn = co2Limit * 0.8;
               const coLimit = getThreshold(thresholds, 'co', 500);
               const coWarn = coLimit * 0.8;
+
               return (
                 <tr
                   key={sensor.id}
@@ -61,6 +63,24 @@ const SensorStats: React.FC<SensorStatsProps> = ({ sensors, thresholds }) => {
                     </div>
                   </td>
                   <td className="px-4 py-2">
+                    <div className={
+                      sensor.motionDetection === 'detection'
+                        ? 'flex items-center justify-center bg-red-100 rounded-full p-1'
+                        : 'flex items-center justify-center bg-gray-100 rounded-full p-1'
+                    }>
+                      <User
+                        size={18}
+                        className={
+                          sensor.motionDetection === 'detection'
+                            ? 'text-red-600'
+                            : 'text-gray-400'
+                        }
+                        aria-label="모션 감지"
+                        tabIndex={0}
+                      />
+                    </div>
+                  </td>
+                  <td className="px-4 py-2">
                     <div className="flex items-center justify-center">
                       <Flame
                         size={18}
@@ -69,6 +89,8 @@ const SensorStats: React.FC<SensorStatsProps> = ({ sensors, thresholds }) => {
                             ? 'text-red-600 animate-pulse'
                             : 'text-gray-400'
                         }
+                        aria-label="화재 감지"
+                        tabIndex={0}
                       />
                     </div>
                   </td>

@@ -17,6 +17,7 @@ export interface SensorListResponse {
   sensorList: {
     sensorID: string;
     lightStatus: string;
+    motionDetection: string;
     sensors: SensorData[];
   }[];
 }
@@ -49,4 +50,5 @@ export interface Sensor {
   lightStatus: LightStatus;
   fireDetector: 'detection' | 'normal';
   sensors: SensorData[];
+  motionDetection: 'detection' | 'normal';
 } 
