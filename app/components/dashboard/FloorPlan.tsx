@@ -111,7 +111,7 @@ const FloorPlan: React.FC<FloorPlanProps> = ({
     };
     
     // 5초마다 반복 실행
-    const interval = setInterval(sendSensorAlerts, 3000);
+    const interval = setInterval(sendSensorAlerts, 1000);
 
     return () => clearInterval(interval);
   }, [sensors]);

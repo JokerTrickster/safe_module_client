@@ -37,11 +37,21 @@ const SensorStats: React.FC<SensorStatsProps> = ({ sensors, thresholds }) => {
               const coLimit = getThreshold(thresholds, 'co', 500);
               const coWarn = coLimit * 0.8;
 
+              // 위험 조건
+              const fireDetected = sensor.fireDetector === 'detection';
+              const motionDetected = sensor.motionDetection === 'detection';
+              const lightDanger = sensor.lightStatus === 'shutdown';
+              const co2Danger = co2 && co2.value >= co2Limit;
+              const coDanger = co && co.value >= coLimit;
+
+              // 하나라도 위험이면 빨간색, 아니면 기본
+              const isDanger = fireDetected || motionDetected || lightDanger || co2Danger || coDanger;
+
               return (
                 <tr
                   key={sensor.id}
                   className={
-                    (sensor.fireDetector === 'detection'
+                    (isDanger
                       ? 'bg-red-50 animate-pulse'
                       : '') +
                     ' border-b last:border-b-0'
