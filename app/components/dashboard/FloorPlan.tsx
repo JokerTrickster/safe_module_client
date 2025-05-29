@@ -256,6 +256,7 @@ const FloorPlan: React.FC<FloorPlanProps> = ({
           isOpen={isModalOpen}
           onClose={handleCloseModal}
           onStatusChange={handleStatusChange}
+          thresholds={thresholds}
         />
       )}
     </div>

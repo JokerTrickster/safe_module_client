@@ -8,16 +8,29 @@ interface SensorModalProps {
   isOpen: boolean;
   onClose: () => void;
   onStatusChange: (sensorId: string, status: 'normal' | 'warning' | 'danger') => void;
+  thresholds: { name: string; threshold: number }[];
+
 }
 
 const MODAL_WIDTH = 400;
 const MODAL_HEIGHT = 420;
 
+
+const getValueStatus = (name: string, value: number, thresholds: { name: string; threshold: number }[]) => {
+  const threshold = thresholds.find(t => t.name === name);
+  if (!threshold) return { label: '정상', color: 'text-green-600' };
+  if (value >= threshold.threshold) return { label: '위험', color: 'text-red-600' };
+  if (value >= threshold.threshold * 0.8) return { label: '경고', color: 'text-yellow-600' };
+  return { label: '정상', color: 'text-green-600' };
+};
+
+
 const SensorModal: React.FC<SensorModalProps> = ({ 
   sensor, 
   isOpen, 
   onClose,
-  onStatusChange 
+  onStatusChange,
+  thresholds 
 }) => {
   const [isLoading, setIsLoading] = useState(false);
   // 드래그 상태 및 위치
@@ -47,6 +60,12 @@ const SensorModal: React.FC<SensorModalProps> = ({
   }, [isDragging]);
 
   if (!isOpen) return null;
+  // 임계치 값 찾기
+  const getThreshold = (name: string) => {
+    const found = thresholds.find(t => t.name === name);
+    return found ? found.threshold : undefined;
+  };
+
 
   // 조명 상태 표기
   const lightingStatusText = sensor.lightStatus === 'shutdown' ? '비정상' : '정상';
@@ -156,9 +175,9 @@ const SensorModal: React.FC<SensorModalProps> = ({
               {sensor.sensors.map((s, i) => {
                 let threshold;
                 if (s.name === 'co2') {
-                  threshold = 3000;
+                  threshold = getThreshold('co2');
                 } else if (s.name === 'co') {
-                  threshold = 500;
+                  threshold = getThreshold('co');
                 }
                 // 센서명 한글 변환
                 const label =
@@ -169,7 +188,9 @@ const SensorModal: React.FC<SensorModalProps> = ({
                     : s.name;
                 return (
                   <span key={i} className="inline-block mr-2">
-                    {s.value}
+                    <span className={threshold !== undefined && s.value >= threshold ? "text-red-600 font-bold" : "text-green-600 font-bold"}>
+                      {s.value}
+                    </span>
                     {threshold !== undefined && (
                       <span className="text-gray-500 text-xs ml-1">/ {threshold}</span>
                     )}
