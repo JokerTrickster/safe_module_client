@@ -121,7 +121,7 @@ const SensorModal: React.FC<SensorModalProps> = ({
       style={{ pointerEvents: 'auto' }}
     >
       <div 
-        className="bg-white border-2 border-black rounded-lg shadow-xl p-6 max-w-md w-full text-black"
+        className={`bg-white border-2 border-black rounded-lg shadow-xl p-6 max-w-md w-full text-black transition-opacity duration-150`}
         style={{
           position: 'fixed',
           left: position.x,
@@ -131,6 +131,7 @@ const SensorModal: React.FC<SensorModalProps> = ({
           cursor: isDragging ? 'grabbing' : 'default',
           zIndex: 1000,
           userSelect: isDragging ? 'none' : 'auto',
+          opacity: isDragging ? 0.4 : 1,
         }}
         onClick={e => e.stopPropagation()}
         onMouseDown={handleMouseDown}
