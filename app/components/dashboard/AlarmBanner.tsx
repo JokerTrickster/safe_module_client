@@ -176,6 +176,7 @@ const AlarmBanner: React.FC<AlarmBannerProps> = ({ onStopAlarm, dangerSensors, o
           isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}
           onStatusChange={onStatusChange}
+          thresholds={thresholds}
         />
       )}
     </>
