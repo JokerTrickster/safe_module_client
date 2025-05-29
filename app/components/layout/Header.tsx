@@ -18,7 +18,7 @@ const Header: React.FC<HeaderProps> = ({
 }) => {
   return (
     <header className={styles.header}>
-      <h1 className={styles.dashboardTitle}>3D Floor Plan Monitoring Dashboard</h1>
+      <h1 className={styles.dashboardTitle}>3D Safe Module Dashboard</h1>
       {alarmActive && (
         <AlarmBanner
           onStopAlarm={onStopAlarm}
