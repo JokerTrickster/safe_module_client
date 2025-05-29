@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Sensor, SensorStatus } from '../../api/sensors/types';
 import { Lightbulb, Flame, User } from 'lucide-react';
 import styles from '../../styles/components/dashboard.module.css';
 
 interface SensorDetailsProps {
+  sensors: Sensor[];
   selectedSensor: (Sensor & { fireDetector?: string }) | null;
   thresholds: { name: string; threshold: number }[];
 }
@@ -16,7 +17,19 @@ const getValueStatus = (name: string, value: number, thresholds: { name: string;
   return { label: '정상', color: 'text-green-600' };
 };
 
-const SensorDetails: React.FC<SensorDetailsProps> = ({ selectedSensor, thresholds }) => {
+const SensorDetails: React.FC<SensorDetailsProps> = ({ sensors,selectedSensor, thresholds }) => {
+  const [currentSensor, setCurrentSensor] = useState(selectedSensor);
+
+  useEffect(() => {
+    if (selectedSensor && sensors.length > 0) {
+      const updatedSensor = sensors.find(sensor => sensor.id === selectedSensor.id);
+      if (updatedSensor) {
+        setCurrentSensor(updatedSensor);
+      }
+    }
+  }, [sensors, selectedSensor]);
+
+
   // 센서 상태 한글 변환
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -91,11 +104,11 @@ const SensorDetails: React.FC<SensorDetailsProps> = ({ selectedSensor, threshold
   return (
     <div className="bg-white rounded-lg shadow-md p-4">
       <h2 className="text-xl font-bold text-black mb-4">센서 상세 정보</h2>
-      {selectedSensor ? (
+      {currentSensor ? (
         <div className="space-y-4">
           <div className="border-b border-gray-200 pb-3">
             <p className="text-sm text-gray-600">센서 ID</p>
-            <p className="text-black font-medium">{selectedSensor.sensor_id}</p>
+            <p className="text-black font-medium">{currentSensor.sensor_id}</p>
           </div>
 
           {/* 조명 상태 */}
@@ -105,10 +118,10 @@ const SensorDetails: React.FC<SensorDetailsProps> = ({ selectedSensor, threshold
               <div className="flex items-center">
                 <Lightbulb 
                   size={20} 
-                  className={selectedSensor.lightStatus === 'on' ? "text-yellow-500" : "text-gray-400"} 
+                  className={currentSensor.lightStatus === 'on' ? "text-yellow-500" : "text-gray-400"} 
                 />
-                <span className={`ml-2 font-bold ${selectedSensor.lightStatus === 'shutdown' ? 'text-red-600' : 'text-green-600'}`}>
-                  {selectedSensor.lightStatus === 'on' ? '정상' : '조명 꺼짐'}
+                <span className={`ml-2 font-bold ${currentSensor.lightStatus === 'shutdown' ? 'text-red-600' : 'text-green-600'}`}>
+                  {currentSensor.lightStatus === 'on' ? '정상' : '조명 꺼짐'}
                 </span>
               </div>
             </div>
@@ -121,10 +134,10 @@ const SensorDetails: React.FC<SensorDetailsProps> = ({ selectedSensor, threshold
               <div className="flex items-center">
                 <Flame 
                   size={20} 
-                  className={selectedSensor.fireDetector === 'detection' ? "text-red-500" : "text-gray-400"} 
+                  className={currentSensor.fireDetector === 'detection' ? "text-red-500" : "text-gray-400"} 
                 />
-                <span className={`ml-2 font-bold ${selectedSensor.fireDetector === 'detection' ? 'text-red-600' : 'text-green-600'}`}>
-                  {selectedSensor.fireDetector === 'detection' ? '화재 감지' : '정상'}
+                <span className={`ml-2 font-bold ${currentSensor.fireDetector === 'detection' ? 'text-red-600' : 'text-green-600'}`}>
+                  {currentSensor.fireDetector === 'detection' ? '화재 감지' : '정상'}
                 </span>
               </div>
             </div>
@@ -137,12 +150,12 @@ const SensorDetails: React.FC<SensorDetailsProps> = ({ selectedSensor, threshold
               <div className="flex items-center">
                 <User
                   size={20}
-                  className={selectedSensor.motionDetection === 'detection' ? "text-red-500" : "text-gray-400"}
+                  className={currentSensor.motionDetection === 'detection' ? "text-red-500" : "text-gray-400"}
                   aria-label="모션 감지"
                   tabIndex={0}
                 />
-                <span className={`ml-2 font-bold ${selectedSensor.motionDetection === 'detection' ? 'text-red-600' : 'text-green-600'}`}>
-                  {selectedSensor.motionDetection === 'detection' ? '감지' : '정상'}
+                <span className={`ml-2 font-bold ${currentSensor.motionDetection === 'detection' ? 'text-red-600' : 'text-green-600'}`}>
+                  {currentSensor.motionDetection === 'detection' ? '감지' : '정상'}
                 </span>
               </div>
             </div>
@@ -152,7 +165,7 @@ const SensorDetails: React.FC<SensorDetailsProps> = ({ selectedSensor, threshold
           <div>
             <p className="text-sm text-gray-600 mb-2">센서 데이터</p>
             <div className="space-y-3">
-              {selectedSensor.sensors.map((sensor, index) => {
+              {currentSensor.sensors.map((sensor, index) => {
                 const threshold = getThreshold(sensor.name);
                 const valueStatus = getValueStatus(sensor.name, sensor.value, thresholds);
                 return (

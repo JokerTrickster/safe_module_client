@@ -36,7 +36,7 @@ export default function Home() {
     >
       <div className={styles.sidePanel}>
         <SensorStats sensors={sensors} thresholds={thresholds} />
-        <SensorDetails selectedSensor={selectedSensorState} thresholds={thresholds} />
+        <SensorDetails sensors={sensors} selectedSensor={selectedSensorState} thresholds={thresholds}  />
   
         {error && (
           <div className={styles.errorMessage}>
