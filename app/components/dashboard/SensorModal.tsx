@@ -1,9 +1,10 @@
 import React, { useState, useRef } from 'react';
 import { X, Flame, User, Lightbulb } from 'lucide-react';
-import { Sensor as SensorType } from '../../api/sensors/types';
+import { Sensor, Sensor as SensorType } from '../../api/sensors/types';
 import { sensorService } from '../../services/sensorService';
 
 interface SensorModalProps {
+  sensors: Sensor[];
   sensor: SensorType;
   isOpen: boolean;
   onClose: () => void;
@@ -24,8 +25,8 @@ const getValueStatus = (name: string, value: number, thresholds: { name: string;
   return { label: '정상', color: 'text-green-600' };
 };
 
-
 const SensorModal: React.FC<SensorModalProps> = ({ 
+  sensors,
   sensor, 
   isOpen, 
   onClose,
@@ -33,6 +34,7 @@ const SensorModal: React.FC<SensorModalProps> = ({
   thresholds 
 }) => {
   const [isLoading, setIsLoading] = useState(false);
+  const [currentSensor, setCurrentSensor] = useState(sensor);
   // 드래그 상태 및 위치
   const [isDragging, setIsDragging] = useState(false);
   const [position, setPosition] = useState<{ x: number; y: number }>(() => {
@@ -44,6 +46,15 @@ const SensorModal: React.FC<SensorModalProps> = ({
     return { x: 0, y: 0 };
   });
   const dragOffset = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
+
+  // sensors가 변경될 때마다 현재 센서 정보 업데이트
+  React.useEffect(() => {
+    console.log('sensors', sensors);
+    const updatedSensor = sensors.find(s => s.id === sensor.id);
+    if (updatedSensor) {
+      setCurrentSensor(updatedSensor);
+    }
+  }, [sensors, sensor.id]);
 
   React.useEffect(() => {
     if (isDragging) {
@@ -66,13 +77,12 @@ const SensorModal: React.FC<SensorModalProps> = ({
     return found ? found.threshold : undefined;
   };
 
-
   // 조명 상태 표기
-  const lightingStatusText = sensor.lightStatus === 'shutdown' ? '비정상' : '정상';
-  const lightingStatusColor = sensor.lightStatus === 'shutdown' ? 'text-red-600' : 'text-green-600';
+  const lightingStatusText = currentSensor.lightStatus === 'shutdown' ? '비정상' : '정상';
+  const lightingStatusColor = currentSensor.lightStatus === 'shutdown' ? 'text-red-600' : 'text-green-600';
 
   // 화재 감지 상태 표기
-  const fireStatusDetected = sensor.fireDetector === 'detection';
+  const fireStatusDetected = currentSensor.fireDetector === 'detection';
   const fireStatusText = fireStatusDetected ? '화재 감지 발생' : '이상없음';
   const fireStatusColor = fireStatusDetected ? 'text-red-600' : 'text-green-600';
 
@@ -81,11 +91,11 @@ const SensorModal: React.FC<SensorModalProps> = ({
     setIsLoading(true);
     try {
       await sensorService.putSensorEvent({
-        sensor_id: sensor.id,
+        sensor_id: currentSensor.id,
         status: 'detection',
         type: 'fire',
       });
-      onStatusChange(sensor.id, 'normal');
+      onStatusChange(currentSensor.id, 'normal');
       onClose();
     } catch (error) {
       console.error('Failed to put sensor event:', error);
@@ -158,22 +168,22 @@ const SensorModal: React.FC<SensorModalProps> = ({
         <div className="space-y-3 mb-4">
           <div className="flex justify-between items-center">
             <span className="text-gray-500 font-medium">ID</span>
-            <span className="font-mono text-sm text-black">{sensor.sensor_id}</span>
+            <span className="font-mono text-sm text-black">{currentSensor.sensor_id}</span>
           </div>
           <div className="flex justify-between items-center">
             <span className="text-gray-500 font-medium">타입</span>
             <span className="text-black font-semibold">
-              {sensor.type === 'co2'
+              {currentSensor.type === 'co2'
                 ? '이산화탄소 (CO2)'
-                : sensor.type === 'co'
+                : currentSensor.type === 'co'
                 ? '일산화탄소 (CO)'
-                : sensor.type}
+                : currentSensor.type}
             </span>
           </div>
           <div className="flex justify-between items-center">
             <span className="text-gray-500 font-medium">값</span>
             <span className="text-black font-semibold">
-              {sensor.sensors.map((s, i) => {
+              {currentSensor.sensors.map((s, i) => {
                 let threshold;
                 if (s.name === 'co2') {
                   threshold = getThreshold('co2');
@@ -203,7 +213,7 @@ const SensorModal: React.FC<SensorModalProps> = ({
           <div className="flex justify-between items-center">
             <span className="text-gray-500 font-medium">위치</span>
             <span className="text-black font-semibold">
-              X: {sensor.position.x}, Y: {sensor.position.y}
+              X: {currentSensor.position.x}, Y: {currentSensor.position.y}
             </span>
           </div>
         </div>
@@ -214,7 +224,7 @@ const SensorModal: React.FC<SensorModalProps> = ({
             <div className="flex items-center">
               <Lightbulb
                 size={20}
-                className={sensor.lightStatus === 'on' ? 'text-yellow-500' : 'text-gray-400'}
+                className={currentSensor.lightStatus === 'on' ? 'text-yellow-500' : 'text-gray-400'}
                 aria-label="조명 상태"
                 tabIndex={0}
               />
@@ -235,7 +245,7 @@ const SensorModal: React.FC<SensorModalProps> = ({
             <div className="flex items-center">
               <User
                 size={20}
-                className={sensor.motionDetection === 'detection' ? 'text-red-500' : 'text-gray-400'}
+                className={currentSensor.motionDetection === 'detection' ? 'text-red-500' : 'text-gray-400'}
                 aria-label="모션 감지"
                 tabIndex={0}
               />

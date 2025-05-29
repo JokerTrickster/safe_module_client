@@ -252,6 +252,7 @@ const FloorPlan: React.FC<FloorPlanProps> = ({
       )}
       {selectedSensor && (
         <SensorModal 
+          sensors={sensors}
           sensor={selectedSensor} 
           isOpen={isModalOpen}
           onClose={handleCloseModal}
