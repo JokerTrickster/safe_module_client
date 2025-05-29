@@ -49,7 +49,6 @@ const SensorModal: React.FC<SensorModalProps> = ({
 
   // sensors가 변경될 때마다 현재 센서 정보 업데이트
   React.useEffect(() => {
-    console.log('sensors', sensors);
     const updatedSensor = sensors.find(s => s.id === sensor.id);
     if (updatedSensor) {
       setCurrentSensor(updatedSensor);
@@ -251,8 +250,8 @@ const SensorModal: React.FC<SensorModalProps> = ({
               />
               <span className="ml-2 font-bold text-black">모션 감지</span>
             </div>
-            <span className={`font-bold ${sensor.motionDetection === 'detection' ? 'text-red-600' : 'text-green-600'}`}>
-              {sensor.motionDetection === 'detection' ? '감지' : '정상'}
+            <span className={`font-bold ${currentSensor.motionDetection === 'detection' ? 'text-red-600' : 'text-green-600'}`}>
+              {currentSensor.motionDetection === 'detection' ? '감지' : '정상'}
             </span>
           </div>
           {/* 화재 감지 처리 버튼 */}

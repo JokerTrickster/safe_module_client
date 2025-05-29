@@ -6,13 +6,14 @@ import { useSensors } from '@/hooks/useSensors';
 
 
 interface AlarmBannerProps {
+  sensors: Sensor[];
   onStopAlarm: (sensorId: string) => void;
   dangerSensors: Sensor[];
   onStatusChange: (sensorId: string, status: 'normal' | 'warning' | 'danger') => void;
 }
 
 
-const AlarmBanner: React.FC<AlarmBannerProps> = ({ onStopAlarm, dangerSensors, onStatusChange }) => {
+const AlarmBanner: React.FC<AlarmBannerProps> = ({ sensors, onStopAlarm, dangerSensors, onStatusChange }) => {
   const [selectedSensor, setSelectedSensor] = useState<Sensor | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [activeAlarms, setActiveAlarms] = useState<Set<string>>(new Set());
@@ -172,6 +173,7 @@ const AlarmBanner: React.FC<AlarmBannerProps> = ({ onStopAlarm, dangerSensors, o
 
       {selectedSensor && (
         <SensorModal
+          sensors={dangerSensors}
           sensor={selectedSensor}
           isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}

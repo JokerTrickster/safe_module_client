@@ -62,6 +62,7 @@ const Dashboard: React.FC = () => {
         </main>
       </div>
       <AlarmBanner
+        sensors={sensors}
         onStopAlarm={handleStopAlarm}
         dangerSensors={dangerSensors}
         onStatusChange={handleStatusChange}
