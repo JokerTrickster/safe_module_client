@@ -117,7 +117,7 @@ const SensorDetails: React.FC<SensorDetailsProps> = ({ selectedSensor, threshold
           {/* 화재감지 상태 */}
           <div className="border-b border-gray-200 pb-3">
             <div className="flex items-center justify-between">
-              <p className="text-sm text-gray-600">화재감지 상태</p>
+              <p className="text-sm text-gray-600">화재 감지 상태</p>
               <div className="flex items-center">
                 <Flame 
                   size={20} 
@@ -165,8 +165,10 @@ const SensorDetails: React.FC<SensorDetailsProps> = ({ selectedSensor, threshold
                         {valueStatus.label}
                       </span>
                     </div>
-                    <p className="text-2xl font-bold text-black mt-1">
-                      {sensor.value}
+                    <p className="text-2xl font-bold mt-1">
+                      <span className={threshold !== undefined && sensor.value >= threshold ? "text-red-600" : "text-green-600"}>
+                        {sensor.value}
+                      </span>
                       {threshold !== undefined && (
                         <span className="text-gray-500 text-base ml-2">/ {threshold}</span>
                       )}
