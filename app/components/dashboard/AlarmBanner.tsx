@@ -37,8 +37,14 @@ const AlarmBanner: React.FC<AlarmBannerProps> = ({ sensors, onStopAlarm, dangerS
         )
         .map(sensor => sensor.id)
     );
-    setActiveAlarms(dangerIds);
-  }, [dangerSensors]);
+    
+    // 기존 activeAlarms에 새로운 위험 센서들을 추가
+    setActiveAlarms(prev => {
+      const newSet = new Set(prev);
+      dangerIds.forEach(id => newSet.add(id));
+      return newSet;
+    });
+  }, [dangerSensors, co2Threshold, coThreshold]);
 
   useEffect(() => {
     const initAudio = () => {};
@@ -79,9 +85,7 @@ const AlarmBanner: React.FC<AlarmBannerProps> = ({ sensors, onStopAlarm, dangerS
       newSet.delete(sensorId);
       return newSet;
     });
-    setTimeout(() => {
-      onStopAlarm(sensorId);
-    }, 0);
+    onStopAlarm(sensorId);
   };
 
   const visibleSensors = dangerSensors.filter(sensor =>
