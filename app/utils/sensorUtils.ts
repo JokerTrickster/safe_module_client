@@ -92,7 +92,7 @@ export const mapApiSensorToAppSensor = (apiSensor: ApiSensor): Sensor & { fireDe
   type: (apiSensor.sensors[0]?.name as Sensor['type']) || 'co2',
   status: (apiSensor.sensors[0]?.status as SensorStatus) || 'normal',
   position: apiSensor.position,
-  lightStatus: apiSensor.lightStatus === 'on' || apiSensor.lightStatus === 'off' || apiSensor.lightStatus === 'shutdown' ? apiSensor.lightStatus : 'on',
+  lightStatus: apiSensor.lightStatus === 'on' || apiSensor.lightStatus === 'off' || apiSensor.lightStatus === 'error' ? apiSensor.lightStatus : 'on',
   fireDetector: apiSensor.fireDetector as 'normal' | 'detection',
   motionDetection: apiSensor.motionDetection as 'normal' | 'detection',
   sensors: apiSensor.sensors.map(s => ({

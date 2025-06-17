@@ -147,6 +147,8 @@ const SensorDetails: React.FC<SensorDetailsProps> = ({ sensors,selectedSensor, t
                     focus:outline-none focus:ring-2 focus:ring-offset-2
                     ${currentSensor.lightStatus === 'on'
                       ? 'bg-red-500 hover:bg-red-600 text-white focus:ring-red-500'
+                      : currentSensor.lightStatus === 'error'
+                      ? 'bg-gray-500 hover:bg-gray-600 text-white focus:ring-gray-500'
                       : 'bg-blue-500 hover:bg-blue-600 text-white focus:ring-blue-500'}
                     ${currentSensor.lightStatus === 'error' ? 'opacity-50 cursor-not-allowed' : ''}
                     ${isLoading ? 'opacity-70 cursor-wait' : ''}
@@ -156,7 +158,11 @@ const SensorDetails: React.FC<SensorDetailsProps> = ({ sensors,selectedSensor, t
                   {isLoading ? (
                     <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
                   ) : (
-                    currentSensor.lightStatus === 'on' ? '조명 끄기' : '조명 켜기'
+                    currentSensor.lightStatus === 'on' 
+                      ? '조명 끄기' 
+                      : currentSensor.lightStatus === 'error'
+                      ? '조명 문제'
+                      : '조명 켜기'
                   )}
                 </button>
                 <div className="flex items-center gap-2">

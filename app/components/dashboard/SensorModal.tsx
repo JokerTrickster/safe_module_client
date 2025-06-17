@@ -50,6 +50,7 @@ const SensorModal: React.FC<SensorModalProps> = ({
   // sensors가 변경될 때마다 현재 센서 정보 업데이트
   React.useEffect(() => {
     const updatedSensor = sensors.find(s => s.id === sensor.id);
+    console.log('updatedSensor', sensors);
     if (updatedSensor) {
       setCurrentSensor(updatedSensor);
     }
@@ -105,10 +106,12 @@ const SensorModal: React.FC<SensorModalProps> = ({
 
   // 조명 상태 토글 핸들러
   const handleLightToggle = async () => {
+    console.log('handleLightToggle', currentSensor.lightStatus);
     if (currentSensor.lightStatus === 'error') return;
     
     setIsLoading(true);
     try {
+
       const newStatus = currentSensor.lightStatus === 'on' ? 'off' : 'on';
       
 
@@ -273,6 +276,8 @@ const SensorModal: React.FC<SensorModalProps> = ({
                   focus:outline-none focus:ring-2 focus:ring-offset-2
                   ${currentSensor.lightStatus === 'on'
                     ? 'bg-red-500 hover:bg-red-600 text-white focus:ring-red-500'
+                    : currentSensor.lightStatus === 'error'
+                    ? 'bg-gray-500 hover:bg-gray-600 text-white focus:ring-gray-500'
                     : 'bg-blue-500 hover:bg-blue-600 text-white focus:ring-blue-500'}
                   ${currentSensor.lightStatus === 'error' ? 'opacity-50 cursor-not-allowed' : ''}
                   ${isLoading ? 'opacity-70 cursor-wait' : ''}
@@ -282,20 +287,14 @@ const SensorModal: React.FC<SensorModalProps> = ({
                 {isLoading ? (
                   <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
                 ) : (
-                  currentSensor.lightStatus === 'on' ? '조명 끄기' : '조명 켜기'
+                  currentSensor.lightStatus === 'on' 
+                    ? '조명 끄기' 
+                    : currentSensor.lightStatus === 'error'
+                    ? '조명 문제'
+                    : '조명 켜기'
                 )}
               </button>
               <div className="flex items-center gap-2">
-                <Lightbulb 
-                  size={20} 
-                  className={
-                    currentSensor.lightStatus === 'error' 
-                      ? "text-red-500" 
-                      : currentSensor.lightStatus === 'on'
-                      ? "text-yellow-500"
-                      : "text-gray-400"
-                  } 
-                />
                 <span className={`font-bold ${
                   currentSensor.lightStatus === 'error' 
                     ? 'text-red-600' 

@@ -12,7 +12,7 @@ import { AxiosError } from 'axios';
 // 조명 제어 요청 타입 추가
 interface LightToggleRequest {
   sensorID: string;
-  status: 'on' | 'off';
+  status: 'on' | 'off' | 'error';
 }
 
 export const sensorService = {
@@ -69,7 +69,6 @@ export const sensorService = {
   async toggleLight(data: LightToggleRequest): Promise<any> {
     try {
       const response = await sensorApi.toggleLight(data);
-      console.log('toggle light response', response.data);
       return response.data;
     } catch (error) {
       console.log('Failed to toggle light:', error);

@@ -19,7 +19,7 @@ export type SensorEventRequest = {
 
 export type LightToggleRequest = {
   sensorID: string;
-  status: 'on' | 'off';
+  status: 'on' | 'off' | 'error';
 };
 
 const BASE_URL = 'http://192.168.51.12:8080/v0.1';
