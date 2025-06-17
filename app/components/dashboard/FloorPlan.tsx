@@ -91,6 +91,7 @@ const FloorPlan: React.FC<FloorPlanProps> = ({
           type: 'SENSOR_ALERTS',
           data: {
             sensorId: sensor.sensor_id || sensor.id,
+            lightStatus: sensor.lightStatus,
             alerts: {
               fire: { isActive: fireActive },
               gas: { isActive: !!gasActive },
