@@ -264,13 +264,12 @@ const SensorModal: React.FC<SensorModalProps> = ({
               />
               <span className="ml-2 font-bold text-black">조명 상태</span>
             </div>
-            <div className="flex items-center gap-6">
-              <span className={`font-bold ${lightingStatusColor}`}>{lightingStatusText}</span>
+            <div className="flex items-center gap-4">
               <button
                 onClick={handleLightToggle}
                 disabled={isLoading || currentSensor.lightStatus === 'error'}
                 className={`
-                  relative inline-flex h-8 w-16 items-center rounded-full transition-all duration-300
+                  relative inline-flex h-8 w-16 items-center rounded-md transition-all duration-300
                   focus:outline-none focus:ring-2 focus:ring-offset-2
                   ${currentSensor.lightStatus === 'on' 
                     ? 'bg-blue-500 hover:bg-blue-600 focus:ring-blue-500' 
@@ -282,10 +281,10 @@ const SensorModal: React.FC<SensorModalProps> = ({
               >
                 <span
                   className={`
-                    absolute flex items-center justify-center h-6 w-6 transform rounded-full bg-white transition-all duration-300
+                    absolute flex items-center justify-center h-6 w-6 transform rounded-md bg-white transition-all duration-300
                     ${currentSensor.lightStatus === 'on' ? 'translate-x-10' : 'translate-x-1'}
                     shadow-sm
-                    ${currentSensor.lightStatus === 'on' ? 'scale-110' : 'scale-100'}
+                    ${currentSensor.lightStatus === 'on' ? 'scale-105' : 'scale-100'}
                     ${isLoading ? 'animate-pulse' : ''}
                   `}
                 >
@@ -301,6 +300,7 @@ const SensorModal: React.FC<SensorModalProps> = ({
                   )}
                 </span>
               </button>
+              <span className={`font-bold ${lightingStatusColor}`}>{lightingStatusText}</span>
             </div>
           </div>
 
