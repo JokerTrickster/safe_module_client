@@ -249,7 +249,7 @@ const SensorModal: React.FC<SensorModalProps> = ({
         <div className="border-t pt-4 space-y-4">
           {/* 조명 상태 */}
           <div className="flex justify-between items-center">
-            <div className="flex items-center">
+            <div className="flex items-center w-32">
               <Lightbulb
                 size={20}
                 className={
@@ -306,7 +306,7 @@ const SensorModal: React.FC<SensorModalProps> = ({
 
           {/* 화재 감지 상태 */}
           <div className="flex justify-between items-center">
-            <div className="flex items-center">
+            <div className="flex items-center w-32">
               <Flame 
                 size={20} 
                 className={fireStatusDetected ? 'text-red-500' : 'text-gray-400'} 
@@ -320,7 +320,7 @@ const SensorModal: React.FC<SensorModalProps> = ({
 
           {/* 모션 감지 상태 */}
           <div className="flex justify-between items-center">
-            <div className="flex items-center">
+            <div className="flex items-center w-32">
               <User
                 size={20}
                 className={currentSensor.motionDetection === 'detection' ? 'text-red-500' : 'text-gray-400'}

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Sensor, SensorStatus } from '../../api/sensors/types';
-import { Lightbulb, Flame, User } from 'lucide-react';
+import { Lightbulb, Flame, User, Wind } from 'lucide-react';
 import styles from '../../styles/components/dashboard.module.css';
 
 interface SensorDetailsProps {
@@ -162,34 +162,57 @@ const SensorDetails: React.FC<SensorDetailsProps> = ({ sensors,selectedSensor, t
           </div>
 
           {/* 센서 데이터 */}
-          <div>
-            <p className="text-sm text-gray-600 mb-2">센서 데이터</p>
-            <div className="space-y-3">
-              {currentSensor.sensors.map((sensor, index) => {
-                const threshold = getThreshold(sensor.name);
-                const valueStatus = getValueStatus(sensor.name, sensor.value, thresholds);
-                return (
-                  <div key={index} className="bg-gray-50 p-3 rounded-md">
-                    <div className="flex justify-between items-center">
-                      <span className="text-black font-medium">
-                        {sensor.name === 'co2' ? '이산화탄소' : '일산화탄소'}
-                      </span>
-                      <span className={`font-medium ${valueStatus.color}`}> 
-                        {valueStatus.label}
-                      </span>
-                    </div>
-                    <p className="text-2xl font-bold mt-1">
-                      <span className={threshold !== undefined && sensor.value >= threshold ? "text-red-600" : "text-green-600"}>
+          <div className="border-b border-gray-200 pb-3">
+            <div className="flex items-center justify-between">
+              <p className="text-sm text-gray-600">센서 데이터</p>
+              <div className="flex items-center">
+                <Wind 
+                  size={20} 
+                  className={
+                    currentSensor.sensors.some(sensor => {
+                      const threshold = getThreshold(sensor.name);
+                      return threshold !== undefined && sensor.value >= threshold;
+                    }) ? "text-red-500" : "text-gray-400"
+                  }
+                />
+                <span className={`ml-2 font-bold ${
+                  currentSensor.sensors.some(sensor => {
+                    const threshold = getThreshold(sensor.name);
+                    return threshold !== undefined && sensor.value >= threshold;
+                  }) ? "text-red-600" : "text-green-600"
+                }`}>
+                  {currentSensor.sensors.some(sensor => {
+                    const threshold = getThreshold(sensor.name);
+                    return threshold !== undefined && sensor.value >= threshold;
+                  }) ? "위험" : "정상"}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* 센서 수치 데이터 */}
+          <div className="space-y-3">
+            {currentSensor.sensors.map((sensor, index) => {
+              const threshold = getThreshold(sensor.name);
+              const valueStatus = getValueStatus(sensor.name, sensor.value, thresholds);
+              return (
+                <div key={index} className="bg-gray-50 p-3 rounded-md">
+                  <div className="flex justify-between items-center">
+                    <span className="text-black font-medium">
+                      {sensor.name === 'co2' ? '이산화탄소' : '일산화탄소'}
+                    </span>
+                    <div className="flex items-center gap-2">
+                      <span className={`text-lg font-bold ${threshold !== undefined && sensor.value >= threshold ? "text-red-600" : "text-green-600"}`}>
                         {sensor.value}
                       </span>
                       {threshold !== undefined && (
-                        <span className="text-gray-500 text-base ml-2">/ {threshold}</span>
+                        <span className="text-gray-500 text-sm">/ {threshold} (임계치)</span>
                       )}
-                    </p>
+                    </div>
                   </div>
-                );
-              })}
-            </div>
+                </div>
+              );
+            })}
           </div>
         </div>
       ) : (
