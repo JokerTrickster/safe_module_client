@@ -19,6 +19,7 @@ const getValueStatus = (name: string, value: number, thresholds: { name: string;
 
 const SensorDetails: React.FC<SensorDetailsProps> = ({ sensors,selectedSensor, thresholds }) => {
   const [currentSensor, setCurrentSensor] = useState(selectedSensor);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     if (selectedSensor && sensors.length > 0) {
@@ -101,6 +102,28 @@ const SensorDetails: React.FC<SensorDetailsProps> = ({ sensors,selectedSensor, t
     }
   };
 
+  const handleLightToggle = async () => {
+    if (currentSensor && !isLoading && currentSensor.lightStatus === 'on') {
+      setIsLoading(true);
+      try {
+        // Implement the logic to turn off the light
+      } catch (error) {
+        console.error('Error turning off the light:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    } else if (currentSensor && !isLoading && currentSensor.lightStatus === 'off') {
+      setIsLoading(true);
+      try {
+        // Implement the logic to turn on the light
+      } catch (error) {
+        console.error('Error turning on the light:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+  };
+
   return (
     <div className="bg-white rounded-lg shadow-md p-4">
       <h2 className="text-xl font-bold text-black mb-4">센서 상세 정보</h2>
@@ -115,14 +138,52 @@ const SensorDetails: React.FC<SensorDetailsProps> = ({ sensors,selectedSensor, t
           <div className="border-b border-gray-200 pb-3">
             <div className="flex items-center justify-between">
               <p className="text-sm text-gray-600">조명 상태</p>
-              <div className="flex items-center">
-                <Lightbulb 
-                  size={20} 
-                  className={currentSensor.lightStatus === 'on' ? "text-yellow-500" : "text-gray-400"} 
-                />
-                <span className={`ml-2 font-bold ${currentSensor.lightStatus === 'error' ? 'text-red-600' : 'text-green-600'}`}>
-                  {currentSensor.lightStatus === 'on' ? '정상' : '조명 꺼짐'}
-                </span>
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={handleLightToggle}
+                  disabled={isLoading || currentSensor.lightStatus === 'error'}
+                  className={`
+                    px-4 py-1.5 rounded-md text-sm font-semibold transition-all duration-300
+                    focus:outline-none focus:ring-2 focus:ring-offset-2
+                    ${currentSensor.lightStatus === 'on'
+                      ? 'bg-red-500 hover:bg-red-600 text-white focus:ring-red-500'
+                      : 'bg-blue-500 hover:bg-blue-600 text-white focus:ring-blue-500'}
+                    ${currentSensor.lightStatus === 'error' ? 'opacity-50 cursor-not-allowed' : ''}
+                    ${isLoading ? 'opacity-70 cursor-wait' : ''}
+                  `}
+                  aria-label={`조명 ${currentSensor.lightStatus === 'on' ? '끄기' : '켜기'}`}
+                >
+                  {isLoading ? (
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  ) : (
+                    currentSensor.lightStatus === 'on' ? '조명 끄기' : '조명 켜기'
+                  )}
+                </button>
+                <div className="flex items-center gap-2">
+                  <Lightbulb 
+                    size={20} 
+                    className={
+                      currentSensor.lightStatus === 'error' 
+                        ? "text-red-500" 
+                        : currentSensor.lightStatus === 'on'
+                        ? "text-yellow-500"
+                        : "text-gray-400"
+                    } 
+                  />
+                  <span className={`font-bold ${
+                    currentSensor.lightStatus === 'error' 
+                      ? 'text-red-600' 
+                      : currentSensor.lightStatus === 'on'
+                      ? 'text-green-600'
+                      : 'text-gray-600'
+                  }`}>
+                    {currentSensor.lightStatus === 'error' 
+                      ? '비정상' 
+                      : currentSensor.lightStatus === 'on'
+                      ? '켜짐'
+                      : '꺼짐'}
+                  </span>
+                </div>
               </div>
             </div>
           </div>

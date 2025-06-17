@@ -264,43 +264,52 @@ const SensorModal: React.FC<SensorModalProps> = ({
               />
               <span className="ml-2 font-bold text-black">조명 상태</span>
             </div>
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-3">
               <button
                 onClick={handleLightToggle}
                 disabled={isLoading || currentSensor.lightStatus === 'error'}
                 className={`
-                  relative inline-flex h-8 w-16 items-center rounded-md transition-all duration-300
+                  px-4 py-1.5 rounded-md text-sm font-semibold transition-all duration-300
                   focus:outline-none focus:ring-2 focus:ring-offset-2
-                  ${currentSensor.lightStatus === 'on' 
-                    ? 'bg-blue-500 hover:bg-blue-600 focus:ring-blue-500' 
-                    : 'bg-gray-200 hover:bg-gray-300 focus:ring-gray-400'}
+                  ${currentSensor.lightStatus === 'on'
+                    ? 'bg-red-500 hover:bg-red-600 text-white focus:ring-red-500'
+                    : 'bg-blue-500 hover:bg-blue-600 text-white focus:ring-blue-500'}
                   ${currentSensor.lightStatus === 'error' ? 'opacity-50 cursor-not-allowed' : ''}
                   ${isLoading ? 'opacity-70 cursor-wait' : ''}
                 `}
                 aria-label={`조명 ${currentSensor.lightStatus === 'on' ? '끄기' : '켜기'}`}
               >
-                <span
-                  className={`
-                    absolute flex items-center justify-center h-6 w-6 transform rounded-md bg-white transition-all duration-300
-                    ${currentSensor.lightStatus === 'on' ? 'translate-x-10' : 'translate-x-1'}
-                    shadow-sm
-                    ${currentSensor.lightStatus === 'on' ? 'scale-105' : 'scale-100'}
-                    ${isLoading ? 'animate-pulse' : ''}
-                  `}
-                >
-                  {isLoading ? (
-                    <div className="w-3 h-3 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
-                  ) : (
-                    <span className={`
-                      text-xs font-semibold
-                      ${currentSensor.lightStatus === 'on' ? 'text-blue-500' : 'text-gray-400'}
-                    `}>
-                      {currentSensor.lightStatus === 'on' ? 'ON' : 'OFF'}
-                    </span>
-                  )}
-                </span>
+                {isLoading ? (
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                ) : (
+                  currentSensor.lightStatus === 'on' ? '조명 끄기' : '조명 켜기'
+                )}
               </button>
-              <span className={`font-bold ${lightingStatusColor}`}>{lightingStatusText}</span>
+              <div className="flex items-center gap-2">
+                <Lightbulb 
+                  size={20} 
+                  className={
+                    currentSensor.lightStatus === 'error' 
+                      ? "text-red-500" 
+                      : currentSensor.lightStatus === 'on'
+                      ? "text-yellow-500"
+                      : "text-gray-400"
+                  } 
+                />
+                <span className={`font-bold ${
+                  currentSensor.lightStatus === 'error' 
+                    ? 'text-red-600' 
+                    : currentSensor.lightStatus === 'on'
+                    ? 'text-green-600'
+                    : 'text-gray-600'
+                }`}>
+                  {currentSensor.lightStatus === 'error' 
+                    ? '비정상' 
+                    : currentSensor.lightStatus === 'on'
+                    ? '켜짐'
+                    : '꺼짐'}
+                </span>
+              </div>
             </div>
           </div>
 
