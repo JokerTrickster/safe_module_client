@@ -77,8 +77,8 @@ const SensorModal: React.FC<SensorModalProps> = ({
   };
 
   // 조명 상태 표기
-  const lightingStatusText = currentSensor.lightStatus === 'shutdown' ? '비정상' : '정상';
-  const lightingStatusColor = currentSensor.lightStatus === 'shutdown' ? 'text-red-600' : 'text-green-600';
+  const lightingStatusText = currentSensor.lightStatus === 'error' ? '비정상' : '정상';
+  const lightingStatusColor = currentSensor.lightStatus === 'error' ? 'text-red-600' : 'text-green-600';
 
   // 화재 감지 상태 표기
   const fireStatusDetected = currentSensor.fireDetector === 'detection';
@@ -98,6 +98,35 @@ const SensorModal: React.FC<SensorModalProps> = ({
       onClose();
     } catch (error) {
       console.error('Failed to put sensor event:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // 조명 상태 토글 핸들러
+  const handleLightToggle = async () => {
+    if (currentSensor.lightStatus === 'error') return;
+    
+    setIsLoading(true);
+    try {
+      const newStatus = currentSensor.lightStatus === 'on' ? 'off' : 'on';
+      
+
+      await sensorService.toggleLight({
+        sensorID: currentSensor.sensor_id,
+        status: newStatus
+      });
+      
+      // 1.5초 딜레이 추가
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // 현재 센서 상태 업데이트
+      setCurrentSensor(prev => ({
+        ...prev,
+        lightStatus: newStatus
+      }));
+    } catch (error) {
+      console.error('Failed to toggle light:', error);
     } finally {
       setIsLoading(false);
     }
@@ -223,22 +252,72 @@ const SensorModal: React.FC<SensorModalProps> = ({
             <div className="flex items-center">
               <Lightbulb
                 size={20}
-                className={currentSensor.lightStatus === 'on' ? 'text-yellow-500' : 'text-gray-400'}
+                className={
+                  currentSensor.lightStatus === 'error' 
+                    ? 'text-red-500' 
+                    : currentSensor.lightStatus === 'on'
+                    ? 'text-yellow-500'
+                    : 'text-gray-400'
+                }
                 aria-label="조명 상태"
                 tabIndex={0}
               />
               <span className="ml-2 font-bold text-black">조명 상태</span>
             </div>
-            <span className={`font-bold ${lightingStatusColor}`}>{lightingStatusText}</span>
+            <div className="flex items-center gap-6">
+              <span className={`font-bold ${lightingStatusColor}`}>{lightingStatusText}</span>
+              <button
+                onClick={handleLightToggle}
+                disabled={isLoading || currentSensor.lightStatus === 'error'}
+                className={`
+                  relative inline-flex h-8 w-16 items-center rounded-full transition-all duration-300
+                  focus:outline-none focus:ring-2 focus:ring-offset-2
+                  ${currentSensor.lightStatus === 'on' 
+                    ? 'bg-blue-500 hover:bg-blue-600 focus:ring-blue-500' 
+                    : 'bg-gray-200 hover:bg-gray-300 focus:ring-gray-400'}
+                  ${currentSensor.lightStatus === 'error' ? 'opacity-50 cursor-not-allowed' : ''}
+                  ${isLoading ? 'opacity-70 cursor-wait' : ''}
+                `}
+                aria-label={`조명 ${currentSensor.lightStatus === 'on' ? '끄기' : '켜기'}`}
+              >
+                <span
+                  className={`
+                    absolute flex items-center justify-center h-6 w-6 transform rounded-full bg-white transition-all duration-300
+                    ${currentSensor.lightStatus === 'on' ? 'translate-x-10' : 'translate-x-1'}
+                    shadow-sm
+                    ${currentSensor.lightStatus === 'on' ? 'scale-110' : 'scale-100'}
+                    ${isLoading ? 'animate-pulse' : ''}
+                  `}
+                >
+                  {isLoading ? (
+                    <div className="w-3 h-3 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
+                  ) : (
+                    <span className={`
+                      text-xs font-semibold
+                      ${currentSensor.lightStatus === 'on' ? 'text-blue-500' : 'text-gray-400'}
+                    `}>
+                      {currentSensor.lightStatus === 'on' ? 'ON' : 'OFF'}
+                    </span>
+                  )}
+                </span>
+              </button>
+            </div>
           </div>
+
           {/* 화재 감지 상태 */}
           <div className="flex justify-between items-center">
             <div className="flex items-center">
-              <Flame size={20} className={fireStatusDetected ? 'text-red-500' : 'text-gray-400'} />
+              <Flame 
+                size={20} 
+                className={fireStatusDetected ? 'text-red-500' : 'text-gray-400'} 
+              />
               <span className="ml-2 font-bold text-black">화재 감지</span>
             </div>
-            <span className={`font-bold ${fireStatusColor}`}>{fireStatusText}</span>
+            <div className="flex items-center gap-6">
+              <span className={`font-bold ${fireStatusColor}`}>{fireStatusText}</span>
+            </div>
           </div>
+
           {/* 모션 감지 상태 */}
           <div className="flex justify-between items-center">
             <div className="flex items-center">
@@ -250,10 +329,13 @@ const SensorModal: React.FC<SensorModalProps> = ({
               />
               <span className="ml-2 font-bold text-black">모션 감지</span>
             </div>
-            <span className={`font-bold ${currentSensor.motionDetection === 'detection' ? 'text-red-600' : 'text-green-600'}`}>
-              {currentSensor.motionDetection === 'detection' ? '감지' : '정상'}
-            </span>
+            <div className="flex items-center gap-6">
+              <span className={`font-bold ${currentSensor.motionDetection === 'detection' ? 'text-red-600' : 'text-green-600'}`}>
+                {currentSensor.motionDetection === 'detection' ? '감지' : '정상'}
+              </span>
+            </div>
           </div>
+
           {/* 화재 감지 처리 버튼 */}
           {fireStatusDetected && (
             <button

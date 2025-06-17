@@ -21,6 +21,7 @@ const Header: React.FC<HeaderProps> = ({
       <h1 className={styles.dashboardTitle}>3D Safe Module Dashboard</h1>
       {alarmActive && (
         <AlarmBanner
+          sensors={dangerSensors}
           onStopAlarm={onStopAlarm}
           dangerSensors={dangerSensors}
           onStatusChange={onStatusChange}

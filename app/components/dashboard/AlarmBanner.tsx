@@ -29,7 +29,7 @@ const AlarmBanner: React.FC<AlarmBannerProps> = ({ sensors, onStopAlarm, dangerS
         .filter(sensor => 
           sensor.status === 'danger' || 
           sensor.fireDetector === 'detection' ||
-          sensor.lightStatus === 'shutdown' ||
+          sensor.lightStatus === 'error' ||
           (sensor.sensors.some(s => 
             (s.name === 'co2' && s.value >= co2Threshold) || 
             (s.name === 'co' && s.value >= coThreshold)
@@ -92,7 +92,7 @@ const AlarmBanner: React.FC<AlarmBannerProps> = ({ sensors, onStopAlarm, dangerS
     activeAlarms.has(sensor.id) && (
       sensor.status === 'danger' || 
       sensor.fireDetector === 'detection' ||
-      sensor.lightStatus === 'shutdown' ||
+      sensor.lightStatus === 'error' ||
       (sensor.sensors.some(s => 
         (s.name === 'co2' && s.value >= co2Threshold) || 
         (s.name === 'co' && s.value >= coThreshold)
@@ -115,7 +115,7 @@ const AlarmBanner: React.FC<AlarmBannerProps> = ({ sensors, onStopAlarm, dangerS
           const co2Danger = co2 && co2.value >= co2Threshold;
           const coDanger = co && co.value >= coThreshold;
           const fireDetected = sensor.fireDetector === 'detection';
-          const lightDanger = sensor.lightStatus === 'shutdown';
+          const lightDanger = sensor.lightStatus === 'error';
           const isRedBanner = fireDetected || co2Danger || coDanger;
           return (
             <div

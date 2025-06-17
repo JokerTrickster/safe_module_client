@@ -120,7 +120,7 @@ const SensorDetails: React.FC<SensorDetailsProps> = ({ sensors,selectedSensor, t
                   size={20} 
                   className={currentSensor.lightStatus === 'on' ? "text-yellow-500" : "text-gray-400"} 
                 />
-                <span className={`ml-2 font-bold ${currentSensor.lightStatus === 'shutdown' ? 'text-red-600' : 'text-green-600'}`}>
+                <span className={`ml-2 font-bold ${currentSensor.lightStatus === 'error' ? 'text-red-600' : 'text-green-600'}`}>
                   {currentSensor.lightStatus === 'on' ? '정상' : '조명 꺼짐'}
                 </span>
               </div>

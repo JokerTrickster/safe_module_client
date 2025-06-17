@@ -84,7 +84,7 @@ const FloorPlan: React.FC<FloorPlanProps> = ({
         const co2 = sensor.sensors.find(s => s.name === 'co2');
         const co = sensor.sensors.find(s => s.name === 'co');
         const gasActive = (co2 && co2.value >= co2Threshold) || (co && co.value >= coThreshold);
-        const lightActive = sensor.lightStatus === 'shutdown';
+        const lightActive = sensor.lightStatus === 'error';
         const motionActive = sensor.motionDetection === 'detection';
 
         const message = {
@@ -104,13 +104,13 @@ const FloorPlan: React.FC<FloorPlanProps> = ({
         if (iframe && iframe.contentWindow) {
           iframe.contentWindow.postMessage(
             message,
-            'http://localhost:3000'
+            'http://192.168.51.12:3000'
           );
         }
       });
     };
     
-    // 5초마다 반복 실행
+    // 1초마다 반복 실행
     const interval = setInterval(sendSensorAlerts, 1000);
 
     return () => clearInterval(interval);
@@ -136,7 +136,7 @@ const FloorPlan: React.FC<FloorPlanProps> = ({
   // 웹뷰 메시지 리스너 등록
   useEffect(() => {
     const handleMessage = (event: MessageEvent) => {
-      if (event.origin === 'http://localhost:3000') {
+      if (event.origin === 'http://192.168.51.12:3000') {
         let jsonData;
         try {
           jsonData = typeof event.data === 'string' ? JSON.parse(event.data) : event.data;
@@ -177,7 +177,7 @@ const FloorPlan: React.FC<FloorPlanProps> = ({
           <div className="relative w-full h-full">
             {/* 웹뷰로 대체 */}
             <iframe
-              src="http://localhost:3000/?mode=safe&scale=0.12&pivot=0.13&env=desktop&parkingLotId=1&token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzQ3MTIwNDc3LCJleHAiOjE3NDk3NTAyMjF9.BPq02OnExiqyI6EoKL0pGupjiBRWtiZDIH_C8D02p9o&status=not_view"
+              src="http://192.168.51.12:3000/?mode=safe&scale=0.19&pivot=0.13&env=desktop&parkingLotId=1&token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzQ3MTIwNDc3LCJleHAiOjE3NDk3NTAyMjF9.BPq02OnExiqyI6EoKL0pGupjiBRWtiZDIH_C8D02p9o&status=not_view"
               className={styles.floorPlanWebView}
               onLoad={() => setIsWebViewLoaded(true)}
               style={{

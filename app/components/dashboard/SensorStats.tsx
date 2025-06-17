@@ -40,7 +40,7 @@ const SensorStats: React.FC<SensorStatsProps> = ({ sensors, thresholds }) => {
               // 위험 조건
               const fireDetected = sensor.fireDetector === 'detection';
               const motionDetected = sensor.motionDetection === 'detection';
-              const lightDanger = sensor.lightStatus === 'shutdown';
+              const lightDanger = sensor.lightStatus === 'error';
               const co2Danger = co2 && co2.value >= co2Limit;
               const coDanger = co && co.value >= coLimit;
 

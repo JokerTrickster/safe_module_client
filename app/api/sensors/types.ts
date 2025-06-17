@@ -1,4 +1,4 @@
-export type LightStatus = 'on' | 'off' | 'shutdown';
+export type LightStatus = 'on' | 'off' | 'error';
 export type SensorStatus = 'normal' | 'warmup' | 'warning' | 'danger';
 
 export interface SensorData {
