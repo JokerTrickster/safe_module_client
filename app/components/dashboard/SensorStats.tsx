@@ -65,7 +65,9 @@ const SensorStats: React.FC<SensorStatsProps> = ({ sensors, thresholds }) => {
                       <Lightbulb
                         size={18}
                         className={
-                          sensor.lightStatus === 'on'
+                          sensor.lightStatus === 'error'
+                            ? 'text-red-500'
+                            : sensor.lightStatus === 'on'
                             ? 'text-yellow-500'
                             : 'text-gray-400'
                         }

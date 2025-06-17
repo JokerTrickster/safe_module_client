@@ -50,7 +50,6 @@ const SensorModal: React.FC<SensorModalProps> = ({
   // sensors가 변경될 때마다 현재 센서 정보 업데이트
   React.useEffect(() => {
     const updatedSensor = sensors.find(s => s.id === sensor.id);
-    console.log('updatedSensor', sensors);
     if (updatedSensor) {
       setCurrentSensor(updatedSensor);
     }
